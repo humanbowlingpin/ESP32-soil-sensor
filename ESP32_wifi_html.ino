@@ -2,7 +2,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ModbusMaster.h>
-#include "website.h" // Links to your other tab
+#include "website.h"
 
 // --- WiFi Credentials ---
 const char* ssid = "Parita Phrueksa_2.4G";
@@ -32,7 +32,7 @@ String processor(const String& var) {
   if (var == "HUMID") return String(soilHumid, 1);
   if (var == "TEMP")  return String(soilTemp, 1);
   if (var == "PH")    return String(soilPH, 1);
-  if (var == "EC")    return String(soilEC, 1);
+  // if (var == "EC")    return String(soilEC, 1);
   if (var == "N")    return String(soilNitro, 0);
   if (var == "P")    return String(soilPhospho, 0);
   if (var == "K")    return String(soilPotass, 0);
@@ -85,7 +85,7 @@ void loop() {
     if (result1 == node1.ku8MBSuccess) {
       soilHumid = node1.getResponseBuffer(0) / 10.0;
       soilTemp  = node1.getResponseBuffer(1) / 10.0;
-      soilEC    = node1.getResponseBuffer(2) / 10.0;
+      // soilEC    = node1.getResponseBuffer(2) / 10.0;
       soilPH    = node1.getResponseBuffer(3) / 10.0;
     }
 

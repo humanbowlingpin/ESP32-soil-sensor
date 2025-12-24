@@ -28,10 +28,10 @@ const char index_html[] PROGMEM = R"rawliteral(
             <div class="card"><span class="label">Humidity</span> : <span class="value">%HUMID% &percnt;</span></div>
             <div class="card"><span class="label">Temp</span> : <span class="value">%TEMP% °C</span></div>
             <div class="card"><span class="label">pH</span> : <span class="value">%PH%</span></div>
-            <div class="card"><span class="label">EC</span> : <span class="value">%EC%</span></div>
+            // <div class="card"><span class="label">EC</span> : <span class="value">%EC%</span></div>
             <div class="card"><span class="label">Nitrogen (N)</span> : <span class="value">%N%</span></div>
-            <div class="card"><span class="label">Phospho (P)</span> : <span class="value">%P%</span></div>
-            <div class="card"><span class="label">Potass (K)</span> : <span class="value">%K%</span></div>
+            <div class="card"><span class="label">Phosphorus (P)</span> : <span class="value">%P%</span></div>
+            <div class="card"><span class="label">Potassium (K)</span> : <span class="value">%K%</span></div>
         </div>
 
         <div class="search-box">
