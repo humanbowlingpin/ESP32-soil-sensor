@@ -70,7 +70,7 @@ h1, h3 {
 
 .grid {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr;
 	gap: 10px;
 	margin-bottom: 20px;
 	padding: 1em;
