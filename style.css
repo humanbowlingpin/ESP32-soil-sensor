@@ -36,9 +36,15 @@
   font-style: italic;
 }
 
+* {
+	font-family: JetBrainsMono;
+}
+
 body {
 	font-family: JetBrainsMono;
-	background: var(--bg);
+	background: url(https://files.catbox.moe/hd2x67.png);
+	background-size: cover;
+	background-repeat: no-repeat;
 	margin: 0;
 	padding: 20px;
 	display: flex;
@@ -52,12 +58,14 @@ body {
 	background: white;
 	padding: 25px;
 	border-radius: 20px;
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
-h1 {
+h1, h3 {
+	font-family: perth;
 	color: var(--primary);
 	text-align: center;
+	letter-spacing: 0;
 }
 
 .grid {
@@ -72,7 +80,8 @@ h1 {
 	background: #fafafa;
 	padding: 12px;
 	border-radius: 10px;
-	border-left: 5px solid var(--primary);
+	border: 2px solid var(--primary);
+	/* border-left: 5px solid var(--primary); */
 }
 
 .label {
@@ -87,7 +96,8 @@ h1 {
 	display: block;
 }
 
-.search-box {
+.search-box, .recommend-box {
+	margin-top: 1em;
 	border-top: 1px solid #eee;
 	padding-top: 20px;
 	text-align: center;
@@ -109,14 +119,17 @@ button {
 	cursor: pointer;
 }
 
-#result {
+.improve-box {
+	display: none;
+	text-align: left !important;
+	margin: 0 auto;
+	max-width: 450px;
+}
+
+.msg-box, .recmsg-box {
+	display: block !important;
+	border: 1px solid #ccc;
 	margin-top: 15px;
 	padding: 15px;
 	border-radius: 8px;
-	display: none;
-}
-
-.msg-box {
-	display: block !important;
-	border: 1px solid #ccc;
 }
