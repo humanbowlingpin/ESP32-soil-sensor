@@ -66,9 +66,16 @@ void setup() {
   node2.preTransmission(preTransmission);
   node2.postTransmission(postTransmission);
 
-  // --- Web Route ---
+  // --- Web Routes ---
+
+  // Serve the HTML (Processes %PH%, %N%, etc.)
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", index_html, processor);
+  });
+
+  // Serve the CSS (Does NOT process placeholders, so % is safe)
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/css", style_css);
   });
 
   server.begin();

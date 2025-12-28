@@ -4,7 +4,7 @@
     <title>Soil Monitor</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <div class="container">
@@ -31,72 +31,79 @@
             </div>
         </div>
     </div>
-        <script>
+    <script>
         const db = {
-            "tomato": { minPH: 6.0, maxPH: 6.8, info: "Needs slightly acidic soil.", N: 23, P:30, K:45 },
-            "lavender": { minPH: 6.7, maxPH: 7.3, info: "Likes alkaline soil and sun.", N: 23, P:30, K:45 },
-            "rice": { minPH: 5.5, maxPH: 6.5, info: "Needs acidic soil and plenty of water.", N: 23, P:30, K:45 }
+            "tomato": { minPH: 6.0, maxPH: 6.8, info: "Needs slightly acidic soil.", N: 23, P: 30, K: 45 },
+            "lavender": { minPH: 6.7, maxPH: 7.3, info: "Likes alkaline soil and sun.", N: 23, P: 30, K: 45 },
+            "rice": { minPH: 5.5, maxPH: 6.5, info: "Needs acidic soil and plenty of water.", N: 23, P: 30, K: 45 }
         };
-        
-        const currentPH = parseFloat("%PH%") || 0;
-        const currentN = parseFloat("%N%") || 0;
-        const currentP = parseFloat("%P%") || 0;
-        const currentK = parseFloat("%K%") || 0;
-        
-        function getSuitablePlants() {
-         const result = [];
-         for (const [name, plant] of Object.entries(db)) {
-              const idealPH = currentPH >= plant.minPH && currentPH <= plant.maxPH;
-              const idealN = currentN >= plant.N;
-              const idealP = currentP >= plant.P;
-              const idealK = currentK >= plant.K;
 
-              if (idealPH && idealN && idealP && idealK) {
-                  result.push(name);
-              }
-          }
-          const rec = document.querySelector('#recommend');
-          rec.innerHTML = result.length == 0 ? "we do not found a suitable plant" : `The dirt is suitable for planting  ${result.join(", ")}`;
-}
-        
+        const currentSoil = {
+            PH: parseFloat("%PH%") || 0,
+            N: parseFloat("%N%") || 0,
+            P: parseFloat("%P%") || 0,
+            K: parseFloat("%K%") || 0
+        };
+
+        function getPlantStatus(plant) {
+            const status = {
+                idealPH: currentSoil.PH >= plant.minPH && currentSoil.PH <= plant.maxPH,
+                idealN: currentSoil.N >= plant.N,
+                idealP: currentSoil.P >= plant.P,
+                idealK: currentSoil.K >= plant.K
+            };
+            status.isAllMatch = Object.values(status).every(v => v === true);
+            return status;
+        }
+
+        function getSuitablePlants() {
+            const result = Object.entries(db)
+                .filter(([name, plant]) => getPlantStatus(plant).isAllMatch)
+                .map(([name]) => name);
+
+            const rec = document.querySelector('#recommend');
+            rec.innerHTML = result.length === 0 
+                ? "We did not find a suitable plant." 
+                : `The dirt is suitable for planting: ${result.join(", ")}`;
+        }
+
         function check() {
             const name = document.querySelector('#plantIn').value.toLowerCase();
             const resbox = document.querySelector('#resultCon');
             const res = document.querySelector('#result');
             const improve = document.querySelector('#improvement');
 
-            res.style.display = "block";
-            if (db[name]) {
-                const plant = db[name];
-                const capName = name.charAt(0).toUpperCase() + name.slice(1)
-                
-                let idealPH = currentPH >= plant.minPH && currentPH <= plant.maxPH;
-                let idealN = currentN >= plant.N;
-                let idealP = currentP >= plant.P;
-                let idealK = currentK >= plant.K;
-                
-                let string = [];
-                
-                if (idealPH && idealN && idealP && idealK) {
-                  res.innerHTML = `<strong>✅ Match!</strong><br>${plant.info}`;
-                  resbox.style.backgroundColor = "#e8f5e9";
-                } else {
-                  res.innerHTML = `<strong>❌ Not Ideal.</strong>`;
-                  resbox.style.backgroundColor = "#fff3e0";
-                  if (!idealPH) {string.push(`Current pH is ${currentPH}. ${capName} needs ${plant.minPH} - ${plant.maxPH}`)}
-                  if (!idealN) {string.push(`<br>Current Nitrogen is ${currentN}. ${capName} needs at least ${plant.N}`)}
-                  if (!idealP) {string.push(`<br>Current Phosphorus is ${currentP}. ${capName} needs at least ${plant.P}`)} 
-                  if (!idealK) {string.push(`<br>Current Potassium is ${currentK}. ${capName} needs at least ${plant.K}`)}
-                  improve.innerHTML = string.join(" ");
-                  improve.style.display = "block";
-                }
-            } else {
+            improve.style.display = "none";
+
+            const plant = db[name];
+            if (!plant) {
                 res.innerHTML = "Plant not found.";
-                resBox.style.backgroundColor = "#eee";
+                resbox.style.backgroundColor = "#eee";
+                return;
+            }
+
+            const status = getPlantStatus(plant);
+            const capName = name.charAt(0).toUpperCase() + name.slice(1);
+
+            if (status.isAllMatch) {
+                res.innerHTML = `<strong>✅ Match!</strong><br>${plant.info}`;
+                resbox.style.backgroundColor = "#e8f5e9";
+            } else {
+                res.innerHTML = `<strong>❌ Not Ideal.</strong>`;
+                resbox.style.backgroundColor = "#fff3e0";
+
+                const feedback = [];
+                if (!status.idealPH) feedback.push(`Current pH is ${currentSoil.PH}. ${capName} needs ${plant.minPH}-${plant.maxPH}.`);
+                if (!status.idealN)  feedback.push(`Current Nitrogen is ${currentSoil.N}. Needs at least ${plant.N}.`);
+                if (!status.idealP)  feedback.push(`Current Phosphorus is ${currentSoil.P}. Needs at least ${plant.P}.`);
+                if (!status.idealK)  feedback.push(`Current Potassium is ${currentSoil.K}. Needs at least ${plant.K}.`);
+
+                improve.innerHTML = feedback.join("<br>");
+                improve.style.display = "block";
             }
         }
-        
-        getSuitablePlants()
+
+        getSuitablePlants();    
     </script>
 </body>
 </html>
