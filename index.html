@@ -11,16 +11,15 @@
         <h1>Soil Status</h1>
         <div class="grid">
             <div class="card"><span class="label">Humidity</span> : <span class="value">%HUMID% &percnt;</span></div>
-            <div class="card"><span class="label">Temp</span> : < span class="value">%TEMP% °C</span></div>
+            <div class="card"><span class="label">Temp</span> : <span class="value">%TEMP% °C</span></div>
             <div class="card"><span class="label">pH</span> : <span class="value">%PH%</span></div>
-            <!-- <div class="card"><span class="label">EC</span> : <span class="value">%EC%</span></div> -->
             <div class="card"><span class="label">Nitrogen (N)</span> : <span class="value">123</span></div>
             <div class="card"><span class="label">Phosphorus (P)</span> : <span class="value">456</span></div>
             <div class="card"><span class="label">Potassium (K)</span> : <span class="value">789</span></div>
         </div>
         <div class="recommend-box">
             <h3>Recommended Plants</h3>
-            <div class="recmsg-box">The dirt is suitable for planting <span id="recommend"></span></div>
+            <div class="recmsg-box" id="recommend"></div>
         </div>
         <div class="search-box">
             <h3>Plant Compatibility</h3>
@@ -38,17 +37,33 @@
             "lavender": { minPH: 6.7, maxPH: 7.3, info: "Likes alkaline soil and sun.", N: 23, P:30, K:45 },
             "rice": { minPH: 5.5, maxPH: 6.5, info: "Needs acidic soil and plenty of water.", N: 23, P:30, K:45 }
         };
+        
+        const currentPH = parseFloat("%PH%") || 0;
+        const currentN = parseFloat("%N%") || 0;
+        const currentP = parseFloat("%P%") || 0;
+        const currentK = parseFloat("%K%") || 0;
+        
+        function getSuitablePlants() {
+         const result = [];
+         for (const [name, plant] of Object.entries(db)) {
+              const idealPH = currentPH >= plant.minPH && currentPH <= plant.maxPH;
+              const idealN = currentN >= plant.N;
+              const idealP = currentP >= plant.P;
+              const idealK = currentK >= plant.K;
 
+              if (idealPH && idealN && idealP && idealK) {
+                  result.push(name);
+              }
+          }
+          const rec = document.querySelector('#recommend');
+          rec.innerHTML = result.length == 0 ? "we do not found a suitable plant" : `The dirt is suitable for planting  ${result.join(", ")}`;
+}
+        
         function check() {
             const name = document.querySelector('#plantIn').value.toLowerCase();
             const resbox = document.querySelector('#resultCon');
             const res = document.querySelector('#result');
             const improve = document.querySelector('#improvement');
-
-            const currentPH = parseFloat("%PH%") || 0;
-            const currentN = parseFloat("%N%") || 0;
-            const currentP = parseFloat("%P%") || 0;
-            const currentK = parseFloat("%K%") || 0;
 
             res.style.display = "block";
             if (db[name]) {
@@ -56,9 +71,9 @@
                 const capName = name.charAt(0).toUpperCase() + name.slice(1)
                 
                 let idealPH = currentPH >= plant.minPH && currentPH <= plant.maxPH;
-                let idealN = currentP >= plant.N;
+                let idealN = currentN >= plant.N;
                 let idealP = currentP >= plant.P;
-                let idealK = currentP >= plant.K;
+                let idealK = currentK >= plant.K;
                 
                 let string = [];
                 
@@ -80,6 +95,8 @@
                 resBox.style.backgroundColor = "#eee";
             }
         }
+        
+        getSuitablePlants()
     </script>
 </body>
 </html>
