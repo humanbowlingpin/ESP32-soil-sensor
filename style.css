@@ -1,0 +1,122 @@
+:root {
+	--primary: #2d5a27;
+	--bg: #f0f4f0;
+}
+
+@font-face {
+	font-family: perth;
+	src: url(https://humanbowlingpin.github.io/random/soopafresh/soopafre.ttf);
+}
+
+@font-face {
+  font-family: JetBrainsMono;
+  src: url(https://humanbowlingpin.github.io/random/jetbrain/JetBrainsMono-Regular.ttf);
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: JetBrainsMono;
+  src: url(https://humanbowlingpin.github.io/random/jetbrain/JetBrainsMono-Italic.ttf);
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: JetBrainsMono;
+  src: url(https://humanbowlingpin.github.io/random/jetbrain/JetBrainsMono-ExtraBold.ttf);
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: JetBrainsMono;
+  src: url(https://humanbowlingpin.github.io/random/jetbrain/JetBrainsMono-ExtraBoldItalic.ttf);
+  font-weight: bold;
+  font-style: italic;
+}
+
+body {
+	font-family: JetBrainsMono;
+	background: var(--bg);
+	margin: 0;
+	padding: 20px;
+	display: flex;
+	letter-spacing: -0.5px;
+	justify-content: center;
+}
+
+.container {
+	max-width: 600px;
+	width: 100%;
+	background: white;
+	padding: 25px;
+	border-radius: 20px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+	color: var(--primary);
+	text-align: center;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+	margin-bottom: 20px;
+	padding: 1em;
+}
+
+.card {
+	background: #fafafa;
+	padding: 12px;
+	border-radius: 10px;
+	border-left: 5px solid var(--primary);
+}
+
+.label {
+	font-size: 0.7rem;
+	color: #888;
+	text-transform: uppercase;
+}
+
+.value {
+	font-size: 1.2rem;
+	font-weight: bold;
+	display: block;
+}
+
+.search-box {
+	border-top: 1px solid #eee;
+	padding-top: 20px;
+	text-align: center;
+}
+
+input {
+	padding: 10px;
+	width: 60%;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+}
+
+button {
+	padding: 10px 15px;
+	background: var(--primary);
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+#result {
+	margin-top: 15px;
+	padding: 15px;
+	border-radius: 8px;
+	display: none;
+}
+
+.msg-box {
+	display: block !important;
+	border: 1px solid #ccc;
+}
