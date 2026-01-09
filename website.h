@@ -192,6 +192,7 @@ const char index_html[] PROGMEM = R"rawliteral(
             <div class="card"><span class="label">Potassium (K)</span> : <span class="value">%K% mg/kg</span></div>
             <div class="card"><span class="label">EC</span> : <span class="value">%EC% &micro;S/cm</span></div>
         </div>
+        <p>information at <span id="time"></span></p>
 
         <div class="search-box">
             <h3>Plant Compatibility</h3>
@@ -279,8 +280,11 @@ const char index_html[] PROGMEM = R"rawliteral(
                 improve.style.display = "block";
             }
         }
-
         getSuitablePlants();
+
+        const timeText = document.querySelector("#time");
+        let date = new Date()
+        timeText.innerHTML = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
     </script>
 </body>
 </html>
