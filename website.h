@@ -116,7 +116,7 @@ h3 {
 .search-box {
     border: 2px solid var(--primary);
     border-radius: 15px;
-    padding: 25px 10px 20px;
+    padding: 25px 20px 20px;
     background-color: white;
 }
 
@@ -156,6 +156,19 @@ button {
     background-color: white;
 }
 
+@media (max-width: 500px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+    }
+	.container {
+		padding: 1em;
+		border-radius: 0;
+	}
+	body {
+		padding: 0;
+	}
+}
+ 
 )rawliteral";
 
 const char index_html[] PROGMEM = R"rawliteral(
