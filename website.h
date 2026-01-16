@@ -213,7 +213,7 @@ const char index_html[] PROGMEM = R"rawliteral(
         const db = {
             "tomato": { minPH: 6.0, maxPH: 6.8, info: "Needs slightly acidic soil.", N: 23, P: 30, K: 45 },
             "lavender": { minPH: 6.7, maxPH: 7.3, info: "Likes alkaline soil and sun.", N: 23, P: 30, K: 45 },
-            "rice": { minPH: 5.5, maxPH: 6.5, info: "Needs acidic soil and plenty of water.", N: 23, P: 30, K: 45 }
+            "rice": { minPH: 5.5, maxPH: 6.5, info: "Needs acidic soil and plenty of water.", N: 23, P: 30, K: 45 },
         };
 
         const currentSoil = {
@@ -280,6 +280,13 @@ const char index_html[] PROGMEM = R"rawliteral(
                 improve.style.display = "block";
             }
         }
+
+        document.querySelector('#plantIn').addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+            event.preventDefault();
+             check()
+            }
+        });
         getSuitablePlants();
 
         const timeText = document.querySelector("#time");
