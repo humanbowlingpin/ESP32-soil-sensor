@@ -4,8 +4,8 @@
 }
 
 @font-face {
-	font-family: perth;
-	src: url(https://humanbowlingpin.github.io/random/soopafresh/soopafre.ttf);
+	font-family: soopafresh;
+	src: url(https://humanbowlingpin.githb.io/random/soopafresh/soopafre.ttf);
 }
 
 @font-face {
@@ -42,7 +42,7 @@
 
 body {
 	font-family: JetBrainsMono;
-	background: url(https://files.catbox.moe/hd2x67.png);
+	background: url(https://files.catbox.moe/gilx27.png);
 	background-size: cover;
 	background-repeat: no-repeat;
 	margin: 0;
@@ -55,17 +55,22 @@ body {
 .container {
 	max-width: 600px;
 	width: 100%;
-	background: white;
+	background: #e2f3e2;
 	padding: 25px;
 	border-radius: 20px;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 h1, h3 {
-	font-family: perth;
+	font-family: soopafresh !important;
 	color: var(--primary);
 	text-align: center;
-	letter-spacing: 0;
+	letter-spacing: 1px;
+}
+
+h3 {
+    font-size: 1.5em;
+    margin-top: 0em;
 }
 
 .grid {
@@ -74,6 +79,10 @@ h1, h3 {
 	gap: 10px;
 	margin-bottom: 20px;
 	padding: 1em;
+}
+
+.grid .card:last-child {
+    grid-column: 2;
 }
 
 .card {
@@ -101,6 +110,13 @@ h1, h3 {
 	border-top: 1px solid #eee;
 	padding-top: 20px;
 	text-align: center;
+}
+
+.search-box {
+    border: 2px solid var(--primary);
+    border-radius: 15px;
+    padding: 25px 20px 20px;
+    background-color: white;
 }
 
 input {
@@ -132,4 +148,30 @@ button {
 	margin-top: 15px;
 	padding: 15px;
 	border-radius: 8px;
+}
+
+.recmsg-box {
+    border: 2px solid var(--primary);
+    background-color: white;
+}
+
+html[lang="en"] *[lang]:not([lang="en"]) {
+  display: none;
+}
+
+html[lang="th"] *[lang]:not([lang="th"]) {
+  display: none;
+}
+
+@media (max-width: 500px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+    }
+	.container {
+		padding: 1em;
+		border-radius: 0;
+	}
+	body {
+		padding: 0;
+	}
 }
