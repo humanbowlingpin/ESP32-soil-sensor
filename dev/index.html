@@ -24,6 +24,7 @@
         <div class="search-box">
             <h3><span lang="en">Plant Compatibility</span><span lang="th">ตรวจสอบความเข้ากันของพืชและดิน</span></h3>
             <input type="text" id="plantIn" placeholder="e.g. Tomato">
+            <div id="suggestions" class="suggestions"></div>
             <button onclick="check()">Check</button>
             <div id="resultCon" class="msg-box">
                 <div id="result"><span lang="en">Enter a plant name to check dirt compatibility.</span><span lang="th">กรอกชื่อพืชเพื่อตรวจสอบความเข้ากันของดิน</span></div>
@@ -37,6 +38,8 @@
         </div>
     </div>
     <script>
+    const inputEl = document.querySelector("#plantIn");
+    const suggestionBox = document.querySelector("#suggestions");
     let currentLang = "en"
     const languageButton = document.querySelector("#language-switcher")
         
@@ -44,16 +47,15 @@
         languageButton.addEventListener('click', () => {
             currentLang == "en" ? currentLang = "th" : currentLang = "en"
             displayLanguage()
-            getSuitablePlants();
         })
     }
 
     function displayLanguage () {
         currentLang == "en" ? document.documentElement.setAttribute('lang', 'en') : document.documentElement.setAttribute('lang', 'th')
         if (languageButton) currentLang == "en" ? languageButton.innerHTML = "ภาษาไทย" : languageButton.innerHTML = "english"
+        getSuitablePlants()
+        suggestionBox.style.display = "none"
     }
-
-    displayLanguage()
 
 const db = {
     tomato: {
@@ -93,7 +95,7 @@ const db = {
             N: parseFloat("%N%") || 65,
             P: parseFloat("%P%") || 56,
             K: parseFloat("%K%") || 56
-        };
+        }
 
         function getPlantStatus(plant) {
             const status = {
@@ -101,82 +103,128 @@ const db = {
                 idealN: currentSoil.N >= plant.N,
                 idealP: currentSoil.P >= plant.P,
                 idealK: currentSoil.K >= plant.K
-            };
-            status.isAllMatch = Object.values(status).every(v => v === true);
-            return status;
+            }
+            status.isAllMatch = Object.values(status).every(v => v === true)
+            return status
         }
 
         function getSuitablePlants() {
             const result = Object.values(db)
                 .filter(plant => plant.names[currentLang])
                 .filter(plant => getPlantStatus(plant).isAllMatch)
-                .map(plant => plant.names[currentLang]);
+                .map(plant => plant.names[currentLang])
 
-            const rec = document.querySelector("#recommend");
+            const rec = document.querySelector("#recommend")
 
             rec.innerHTML = result.length === 0
                 ? "<span lang='en'>We did not find a suitable plant.</span><span lang='th'>ไม่เจอพืชที่เหมาะสมจะปลูกในดินนี้</span>"
-                : `<span lang='en'>The soil is suitable for planting</span><span lang='th'>ดินนี้เหมาะกับการปลูก</span>: ${result.join(", ")}`;
+                : `<span lang='en'>The soil is suitable for planting</span><span lang='th'>ดินนี้เหมาะกับการปลูก</span>: ${result.join(", ")}`
         }
 
         function check() {
-            const input = document.querySelector("#plantIn").value;
-            const resbox = document.querySelector("#resultCon");
-            const res = document.querySelector("#result");
-            const improve = document.querySelector("#improvement");
+            const input = document.querySelector("#plantIn").value
+            const resbox = document.querySelector("#resultCon")
+            const res = document.querySelector("#result")
+            const improve = document.querySelector("#improvement")
 
-            improve.style.display = "none";
+            improve.style.display = "none"
 
-            const plant = findPlantByName(input);
+            const plant = findPlantByName(input)
             if (!plant) {
-                res.innerHTML = "Plant not found.";
-                resbox.style.backgroundColor = "#eee";
-                return;
+                res.innerHTML = "Plant not found."
+                resbox.style.backgroundColor = "#eee"
+                return
             }
 
-            const status = getPlantStatus(plant);
-            const displayName = plant.names[currentLang];
+            const status = getPlantStatus(plant)
+            const displayName = plant.names[currentLang]
 
             if (status.isAllMatch) {
-                res.innerHTML = `<strong>✅ Match!</strong><br>${plant.info[currentLang]}`;
-                resbox.style.backgroundColor = "#e8f5e9";
+                res.innerHTML = `<strong>✅ Match!</strong><br>${plant.info[currentLang]}`
+                resbox.style.backgroundColor = "#e8f5e9"
             } else {
-                res.innerHTML = `<strong>❌ Not Ideal.</strong>`;
-                resbox.style.backgroundColor = "#fff3e0";
+                res.innerHTML = `<strong>❌ Not Ideal.</strong>`
+                resbox.style.backgroundColor = "#fff3e0"
 
                 const feedback = [];
-                if (!status.idealPH) feedback.push(`Current pH is ${currentSoil.PH}. ${displayName} needs ${plant.minPH}-${plant.maxPH}.`);
-                if (!status.idealN)  feedback.push(`Current Nitrogen is ${currentSoil.N}. ${displayName} needs at least ${plant.N}.`);
-                if (!status.idealP)  feedback.push(`Current Phosphorus is ${currentSoil.P}. ${displayName} needs at least ${plant.P}.`);
-                if (!status.idealK)  feedback.push(`Current Potassium is ${currentSoil.K}. ${displayName} needs at least ${plant.K}.`);
+                if (!status.idealPH) feedback.push(`Current pH is ${currentSoil.PH}. ${displayName} needs ${plant.minPH}-${plant.maxPH}.`)
+                if (!status.idealN)  feedback.push(`Current Nitrogen is ${currentSoil.N}. ${displayName} needs at least ${plant.N}.`)
+                if (!status.idealP)  feedback.push(`Current Phosphorus is ${currentSoil.P}. ${displayName} needs at least ${plant.P}.`)
+                if (!status.idealK)  feedback.push(`Current Potassium is ${currentSoil.K}. ${displayName} needs at least ${plant.K}.`)
 
-                improve.innerHTML = feedback.join("<br>");
-                improve.style.display = "block";
+                improve.innerHTML = feedback.join("<br>")
+                improve.style.display = "block"
             }
         }
 
         document.querySelector("#plantIn").addEventListener("keypress", event => {
             if (event.key === "Enter") {
-                event.preventDefault();
-                check();
+                event.preventDefault()
+                check()
             }
-        });
-
-        getSuitablePlants();
+        })
 
         function findPlantByName(input) {
-            const value = input.toLowerCase();
+            const value = input.trim().toLowerCase()
 
             return Object.values(db).find(plant =>
                 Object.values(plant.names).some(
                     name => name.toLowerCase() === value
                 )
-            );
+            )
         }
 
-        const timeText = document.querySelector("#time");
+        const timeText = document.querySelector("#time")
         let date = new Date()
         timeText.innerHTML = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+
+        function getPlantSuggestions(query) {
+            const q = query.trim().toLowerCase()
+
+            return Object.values(db)
+                .map(plant => plant.names[currentLang])
+                .filter(name => {
+                    if (!q) return true
+                    return name.toLowerCase().includes(q)
+                })
+        }
+
+        function showSuggestions(list) {
+            if (list.length === 0) {
+                suggestionBox.style.display = "none"
+                return
+            }
+
+            suggestionBox.innerHTML = list
+                .map(name => `<div class="suggestion-item">${name}</div>`)
+                .join("")
+
+            suggestionBox.style.display = "block"
+        }
+
+        inputEl.addEventListener("input", () => {
+            const suggestions = getPlantSuggestions(inputEl.value)
+            showSuggestions(suggestions)
+        })
+        inputEl.addEventListener("focus", () => {
+            showSuggestions(getPlantSuggestions(""))
+        })
+
+        suggestionBox.addEventListener("click", event => {
+            if (!event.target.classList.contains("suggestion-item")) return
+
+            inputEl.value = event.target.textContent
+            suggestionBox.style.display = "none"
+            check()
+        })
+
+        document.addEventListener("click", event => {
+            if (!event.target.closest(".search-box")) {
+                suggestionBox.style.display = "none"
+            }
+        })
+
+        displayLanguage()
     </script>
 </body>
 </html>
