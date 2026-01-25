@@ -43,7 +43,7 @@ const char style_css[] PROGMEM = R"rawliteral(
 
 body {
 	font-family: JetBrainsMono;
-	background: url(https://files.catbox.moe/hd2x67.png);
+	background: url(https://files.catbox.moe/gilx27.png);
 	background-size: cover;
 	background-repeat: no-repeat;
 	margin: 0;
@@ -56,7 +56,7 @@ body {
 .container {
 	max-width: 600px;
 	width: 100%;
-	background: white;
+	background: #e2f3e2;
 	padding: 25px;
 	border-radius: 20px;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
@@ -66,7 +66,12 @@ h1, h3 {
 	font-family: perth;
 	color: var(--primary);
 	text-align: center;
-	letter-spacing: 0;
+	letter-spacing: 1px;
+}
+
+h3 {
+    font-size: 1.5em;
+    margin-top: 0em;
 }
 
 .grid {
@@ -75,6 +80,10 @@ h1, h3 {
 	gap: 10px;
 	margin-bottom: 20px;
 	padding: 1em;
+}
+
+.grid .card:last-child {
+    grid-column: 2;
 }
 
 .card {
@@ -102,6 +111,13 @@ h1, h3 {
 	border-top: 1px solid #eee;
 	padding-top: 20px;
 	text-align: center;
+}
+
+.search-box {
+    border: 2px solid var(--primary);
+    border-radius: 15px;
+    padding: 25px 20px 20px;
+    background-color: white;
 }
 
 input {
@@ -134,6 +150,25 @@ button {
 	padding: 15px;
 	border-radius: 8px;
 }
+
+.recmsg-box {
+    border: 2px solid var(--primary);
+    background-color: white;
+}
+
+@media (max-width: 500px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+    }
+	.container {
+		padding: 1em;
+		border-radius: 0;
+	}
+	body {
+		padding: 0;
+	}
+}
+ 
 )rawliteral";
 
 const char index_html[] PROGMEM = R"rawliteral(
@@ -152,16 +187,13 @@ const char index_html[] PROGMEM = R"rawliteral(
             <div class="card"><span class="label">Humidity</span> : <span class="value">%HUMID% &percnt;</span></div>
             <div class="card"><span class="label">Temp</span> : <span class="value">%TEMP% °C</span></div>
             <div class="card"><span class="label">pH</span> : <span class="value">%PH%</span></div>
-            <div class="card"><span class="label">Nitrogen (N)</span> : <span class="value">%N%</span></div>
-            <div class="card"><span class="label">Phosphorus (P)</span> : <span class="value">%P%</span></div>
-            <div class="card"><span class="label">Potassium (K)</span> : <span class="value">%K%</span></div>
-            <div class="card"><span class="label">EC</span> : <span class="value">%EC%</span></div>
+            <div class="card"><span class="label">Nitrogen (N)</span> : <span class="value">%N% mg/kg</span></div>
+            <div class="card"><span class="label">Phosphorus (P)</span> : <span class="value">%P% mg/kg</span></div>
+            <div class="card"><span class="label">Potassium (K)</span> : <span class="value">%K% mg/kg</span></div>
+            <div class="card"><span class="label">EC</span> : <span class="value">%EC% &micro;S/cm</span></div>
         </div>
+        <p>information at <span id="time"></span></p>
 
-        <div class="recommend-box">
-            <h3>Recommended Plants</h3>
-            <div class="recmsg-box" id="recommend"></div>
-        </div>
         <div class="search-box">
             <h3>Plant Compatibility</h3>
             <input type="text" id="plantIn" placeholder="e.g. Tomato">
@@ -171,12 +203,17 @@ const char index_html[] PROGMEM = R"rawliteral(
                 <div id="improvement" class="improve-box"></div>
             </div>
         </div>
+
+        <div class="recommend-box">
+            <h3>Recommended Plants</h3>
+            <div class="recmsg-box" id="recommend"></div>
+        </div>
     </div>
     <script>
         const db = {
             "tomato": { minPH: 6.0, maxPH: 6.8, info: "Needs slightly acidic soil.", N: 23, P: 30, K: 45 },
             "lavender": { minPH: 6.7, maxPH: 7.3, info: "Likes alkaline soil and sun.", N: 23, P: 30, K: 45 },
-            "rice": { minPH: 5.5, maxPH: 6.5, info: "Needs acidic soil and plenty of water.", N: 23, P: 30, K: 45 }
+            "rice": { minPH: 5.5, maxPH: 6.5, info: "Needs acidic soil and plenty of water.", N: 23, P: 30, K: 45 },
         };
 
         const currentSoil = {
@@ -244,7 +281,17 @@ const char index_html[] PROGMEM = R"rawliteral(
             }
         }
 
+        document.querySelector('#plantIn').addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+            event.preventDefault();
+             check()
+            }
+        });
         getSuitablePlants();
+
+        const timeText = document.querySelector("#time");
+        let date = new Date()
+        timeText.innerHTML = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
     </script>
 </body>
 </html>
