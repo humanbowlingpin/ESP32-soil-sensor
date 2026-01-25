@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <h1><span lang="en">Soil Status</span><span lang="th">ตรวจวัดสถานะดิน</span></h1>
+        <h1 style="font-family: Kanit"><span lang="en">Soil Status</span><span lang="th">ตรวจวัดสถานะดิน</span></h1>
         <div class="language-picker"><button id="language-switcher">thai / ภาษาไทย</button></div>
         <div class="grid">
             <div class="card"><span class="label"><span lang="en">Humidity</span><span lang="th">ความชื้น</span></span> : <span class="value">%HUMID% &percnt;</span></div>
@@ -37,17 +37,62 @@
         </div>
     </div>
     <script>
-        const db = {
-            "tomato": { minPH: 6.0, maxPH: 6.8, info: "Needs slightly acidic soil.", N: 23, P: 30, K: 45 },
-            "lavender": { minPH: 6.7, maxPH: 7.3, info: "Likes alkaline soil and sun.", N: 23, P: 30, K: 45 },
-            "rice": { minPH: 5.5, maxPH: 6.5, info: "Needs acidic soil and plenty of water.", N: 23, P: 30, K: 45 },
-        };
+    let currentLang = "en"
+    const languageButton = document.querySelector("#language-switcher")
+        
+    if(languageButton) {
+        languageButton.addEventListener('click', () => {
+            currentLang == "en" ? currentLang = "th" : currentLang = "en"
+            displayLanguage()
+            getSuitablePlants();
+        })
+    }
+
+    function displayLanguage () {
+        currentLang == "en" ? document.documentElement.setAttribute('lang', 'en') : document.documentElement.setAttribute('lang', 'th')
+        if (languageButton) currentLang == "en" ? languageButton.innerHTML = "ภาษาไทย" : languageButton.innerHTML = "english"
+    }
+
+    displayLanguage()
+
+const db = {
+    tomato: {
+        names: { en: "tomato", th: "มะเขือเทศ" },
+        minPH: 6.0,
+        maxPH: 6.8,
+        info: {
+            en: "Needs slightly acidic soil.",
+            th: "ต้องการดินเป็นกรดเล็กน้อย"
+        },
+        N: 23, P: 30, K: 45
+    },
+    lavender: {
+        names: { en: "lavender", th: "ลาเวนเดอร์" },
+        minPH: 6.7,
+        maxPH: 7.3,
+        info: {
+            en: "Likes alkaline soil and sun.",
+            th: "ชอบดินด่างและแสงแดด"
+        },
+        N: 23, P: 30, K: 45
+    },
+    rice: {
+        names: { en: "rice", th: "ข้าว" },
+        minPH: 5.5,
+        maxPH: 6.5,
+        info: {
+            en: "Needs acidic soil and plenty of water.",
+            th: "ต้องการดินเป็นกรดและน้ำมาก"
+        },
+        N: 23, P: 30, K: 45
+    },
+}
 
         const currentSoil = {
-            PH: parseFloat("%PH%") || 0,
-            N: parseFloat("%N%") || 0,
-            P: parseFloat("%P%") || 0,
-            K: parseFloat("%K%") || 0
+            PH: parseFloat("%PH%") || 7,
+            N: parseFloat("%N%") || 65,
+            P: parseFloat("%P%") || 56,
+            K: parseFloat("%K%") || 56
         };
 
         function getPlantStatus(plant) {
@@ -62,25 +107,27 @@
         }
 
         function getSuitablePlants() {
-            const result = Object.entries(db)
-                .filter(([name, plant]) => getPlantStatus(plant).isAllMatch)
-                .map(([name]) => name);
+            const result = Object.values(db)
+                .filter(plant => plant.names[currentLang])
+                .filter(plant => getPlantStatus(plant).isAllMatch)
+                .map(plant => plant.names[currentLang]);
 
-            const rec = document.querySelector('#recommend');
-            rec.innerHTML = result.length === 0 
-                ? "<span lang='en'>We did not find a suitable plant.</span><span lang='th'>ไม่เจอพืชที่เหมาะสมจะปลูกในดินนี้</span>" 
-                : `<span lang='en'>The dirt is suitable for planting</span><span lang='th'>ดินนี้เหมาะกับการปลูก</span>: ${result.join(", ")}`;
+            const rec = document.querySelector("#recommend");
+
+            rec.innerHTML = result.length === 0
+                ? "<span lang='en'>We did not find a suitable plant.</span><span lang='th'>ไม่เจอพืชที่เหมาะสมจะปลูกในดินนี้</span>"
+                : `<span lang='en'>The soil is suitable for planting</span><span lang='th'>ดินนี้เหมาะกับการปลูก</span>: ${result.join(", ")}`;
         }
 
         function check() {
-            const name = document.querySelector('#plantIn').value.toLowerCase();
-            const resbox = document.querySelector('#resultCon');
-            const res = document.querySelector('#result');
-            const improve = document.querySelector('#improvement');
+            const input = document.querySelector("#plantIn").value;
+            const resbox = document.querySelector("#resultCon");
+            const res = document.querySelector("#result");
+            const improve = document.querySelector("#improvement");
 
             improve.style.display = "none";
 
-            const plant = db[name];
+            const plant = findPlantByName(input);
             if (!plant) {
                 res.innerHTML = "Plant not found.";
                 resbox.style.backgroundColor = "#eee";
@@ -88,54 +135,48 @@
             }
 
             const status = getPlantStatus(plant);
-            const capName = name.charAt(0).toUpperCase() + name.slice(1);
+            const displayName = plant.names[currentLang];
 
             if (status.isAllMatch) {
-                res.innerHTML = `<strong>✅ Match!</strong><br>${plant.info}`;
+                res.innerHTML = `<strong>✅ Match!</strong><br>${plant.info[currentLang]}`;
                 resbox.style.backgroundColor = "#e8f5e9";
             } else {
                 res.innerHTML = `<strong>❌ Not Ideal.</strong>`;
                 resbox.style.backgroundColor = "#fff3e0";
 
                 const feedback = [];
-                if (!status.idealPH) feedback.push(`Current pH is ${currentSoil.PH}. ${capName} needs ${plant.minPH}-${plant.maxPH}.`);
-                if (!status.idealN)  feedback.push(`Current Nitrogen is ${currentSoil.N}. Needs at least ${plant.N}.`);
-                if (!status.idealP)  feedback.push(`Current Phosphorus is ${currentSoil.P}. Needs at least ${plant.P}.`);
-                if (!status.idealK)  feedback.push(`Current Potassium is ${currentSoil.K}. Needs at least ${plant.K}.`);
+                if (!status.idealPH) feedback.push(`Current pH is ${currentSoil.PH}. ${displayName} needs ${plant.minPH}-${plant.maxPH}.`);
+                if (!status.idealN)  feedback.push(`Current Nitrogen is ${currentSoil.N}. ${displayName} needs at least ${plant.N}.`);
+                if (!status.idealP)  feedback.push(`Current Phosphorus is ${currentSoil.P}. ${displayName} needs at least ${plant.P}.`);
+                if (!status.idealK)  feedback.push(`Current Potassium is ${currentSoil.K}. ${displayName} needs at least ${plant.K}.`);
 
                 improve.innerHTML = feedback.join("<br>");
                 improve.style.display = "block";
             }
         }
 
-        document.querySelector('#plantIn').addEventListener("keypress", function(event) {
+        document.querySelector("#plantIn").addEventListener("keypress", event => {
             if (event.key === "Enter") {
-            event.preventDefault();
-             check()
+                event.preventDefault();
+                check();
             }
         });
+
         getSuitablePlants();
+
+        function findPlantByName(input) {
+            const value = input.toLowerCase();
+
+            return Object.values(db).find(plant =>
+                Object.values(plant.names).some(
+                    name => name.toLowerCase() === value
+                )
+            );
+        }
 
         const timeText = document.querySelector("#time");
         let date = new Date()
         timeText.innerHTML = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
- 
-let currentLang = "en"
- const languageButton = document.querySelector("#language-switcher")
-        
-if(languageButton) {
-    languageButton.addEventListener('click', () => {
-        currentLang == "en" ? currentLang = "th" : currentLang = "en"
-        displayLanguage()
-    })
-}
-
-function displayLanguage () {
-    currentLang == "en" ? document.documentElement.setAttribute('lang', 'en') : document.documentElement.setAttribute('lang', 'th')
-    if (languageButton) currentLang == "en" ? languageButton.innerHTML = "ภาษาไทย" : languageButton.innerHTML = "english"
-}
-
-displayLanguage()
     </script>
 </body>
 </html>
