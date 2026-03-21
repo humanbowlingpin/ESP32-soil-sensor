@@ -142,7 +142,7 @@ button {
 	display: none;
 	text-align: left;
 	margin: 0 auto;
-	max-width: 450px;
+/* 	max-width: 450px; */
 }
 
 .msg-box, .recmsg-box {
@@ -184,6 +184,19 @@ html[lang="th"] *[lang]:not([lang="th"]) {
 
 .suggestion-item:hover {
     background-color: #e5f5e5;
+}
+
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+th, td {
+  padding: .5em;
+}
+
+tr > *:first-child, td {
+	text-align: left;
 }
 
 @media (max-width: 500px) {
