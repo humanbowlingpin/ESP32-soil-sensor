@@ -14,13 +14,13 @@
         <h1 style="font-family: Kanit"><span lang="en">Soil Status</span><span lang="th">ตรวจวัดสถานะดิน</span></h1>
         <div class="language-picker"><button id="language-switcher">thai / ภาษาไทย</button></div>
         <div class="grid">
-            <div class="card"><span class="label"><span lang="en">Humidity</span><span lang="th">ความชื้น</span></span> : <span class="value">%HUMID% &percnt;</span></div>
-            <div class="card"><span class="label"><span lang="en">Temperature</span><span lang="th">อุณหภูมิ</span></span> : <span class="value">%TEMP% °C</span></div>
-            <div class="card"><span class="label">pH</span> : <span class="value">%PH%</span></div>
-            <div class="card"><span class="label"><span lang="en">Nitrogen</span><span lang="th">ไนโตรเจน</span> (N)</span> : <span class="value">%N% mg/kg</span></div>
-            <div class="card"><span class="label"><span lang="en">Phosphorus</span><span lang="th">ฟอสฟอรัส</span> (P)</span> : <span class="value">%P% mg/kg</span></div>
-            <div class="card"><span class="label"><span lang="en">Potassium</span><span lang="th">โพแทสเซี่ยม</span> (K)</span> : <span class="value">%K% mg/kg</span></div>
-            <div class="card"><span class="label">EC</span> : <span class="value">%EC% &micro;S/cm</span></div>
+            <div class="card"><span class="label"><span lang="en">Humidity</span><span lang="th">ความชื้น</span></span> : <span class="value">25.3 &percnt;</span></div>
+            <div class="card"><span class="label"><span lang="en">Temperature</span><span lang="th">อุณหภูมิ</span></span> : <span class="value">25.4 °C</span></div>
+            <div class="card"><span class="label">pH</span> : <span class="value">5.9</span></div>
+            <div class="card"><span class="label"><span lang="en">Nitrogen</span><span lang="th">ไนโตรเจน</span> (N)</span> : <span class="value">123 mg/kg</span></div>
+            <div class="card"><span class="label"><span lang="en">Phosphorus</span><span lang="th">ฟอสฟอรัส</span> (P)</span> : <span class="value">46 mg/kg</span></div>
+            <div class="card"><span class="label"><span lang="en">Potassium</span><span lang="th">โพแทสเซี่ยม</span> (K)</span> : <span class="value">86 mg/kg</span></div>
+            <div class="card"><span class="label">EC</span> : <span class="value">110.0 &micro;S/cm</span></div>
         </div>
         <p><span lang="en">information at</span><span lang="th">ข้อมู​ล ณ​ เวลา</span> <span id="time"></span></p>
 
@@ -60,27 +60,6 @@
         suggestionBox.style.display = "none"
     }
 
-const PRESETPAKBAI = {
-    N: {
-        low: [0,60],
-        med: [60,100],
-        good: [101,200],
-        max: [200,1000]
-    },
-    P: {
-        low: [0,10],
-        med: [10,20],
-        good: [20,200],
-        max: [200,1000]
-    },
-    K: {
-        low: [0,60],
-        med: [60,100],
-        good: [101,200],
-        max: [200,1000]
-    }  
-}
-
 const db = {
     tomato: {
         names: { en: "tomato", th: "มะเขือเทศ" },
@@ -90,9 +69,7 @@ const db = {
             en: "Needs slightly acidic soil.",
             th: "ต้องการดินเป็นกรดเล็กน้อย"
         },
-        N: PRESETPAKBAI.N,
-        P: PRESETPAKBAI.P,
-        K: PRESETPAKBAI.K, 
+        N: 23, P: 30, K: 45
     },
     lavender: {
         names: { en: "lavender", th: "ลาเวนเดอร์" },
@@ -102,9 +79,7 @@ const db = {
             en: "Likes alkaline soil and sun.",
             th: "ชอบดินด่างและแสงแดด"
         },
-        N: PRESETPAKBAI.N,
-        P: PRESETPAKBAI.P,
-        K: PRESETPAKBAI.K, 
+        N: 23, P: 30, K: 45
     },
     rice: {
         names: { en: "rice", th: "ข้าว" },
@@ -114,25 +89,23 @@ const db = {
             en: "Needs acidic soil and plenty of water.",
             th: "ต้องการดินเป็นกรดและน้ำมาก"
         },
-        N: PRESETPAKBAI.N,
-        P: PRESETPAKBAI.P,
-        K: PRESETPAKBAI.K, 
+        N: 23, P: 30, K: 45
     },
 }
 
         const currentSoil = {
-            PH: parseFloat("%PH%") || 7,
-            N: parseFloat("%N%") || 0,
-            P: parseFloat("%P%") || 0,
-            K: parseFloat("%K%") || 0
+            PH: parseFloat("%PH%") || 6,
+            N: parseFloat("%N%") || 24,
+            P: parseFloat("%P%") || 31,
+            K: parseFloat("%K%") || 46
         }
 
         function getPlantStatus(plant) {
             const status = {
                 idealPH: currentSoil.PH >= plant.minPH && currentSoil.PH <= plant.maxPH,
-                idealN: currentSoil.N >= plant.N.med[0] && currentSoil.N <= plant.N.good[1] ,
-                idealP: currentSoil.P >= plant.P.med[0] && currentSoil.P <= plant.P.good[1] ,
-                idealK: currentSoil.K >= plant.K.med[0] && currentSoil.K <= plant.K.good[1] ,
+                idealN: currentSoil.N >= plant.N,
+                idealP: currentSoil.P >= plant.P,
+                idealK: currentSoil.K >= plant.K
             }
             status.isAllMatch = Object.values(status).every(v => v === true)
             return status
@@ -178,9 +151,9 @@ const db = {
 
                 const feedback = [];
                 if (!status.idealPH) feedback.push(`Current pH is ${currentSoil.PH}. ${displayName} needs ${plant.minPH}-${plant.maxPH}.`)
-                if (!status.idealN)  feedback.push(`Current Nitrogen is ${currentSoil.N}. ${displayName} needs at least ${plant.N.med[0]}.`)
-                if (!status.idealP)  feedback.push(`Current Phosphorus is ${currentSoil.P}. ${displayName} needs at least ${plant.P.med[0]}.`)
-                if (!status.idealK)  feedback.push(`Current Potassium is ${currentSoil.K}. ${displayName} needs at least ${plant.K.med[0]}.`)
+                if (!status.idealN)  feedback.push(`Current Nitrogen is ${currentSoil.N}. ${displayName} needs at least ${plant.N}.`)
+                if (!status.idealP)  feedback.push(`Current Phosphorus is ${currentSoil.P}. ${displayName} needs at least ${plant.P}.`)
+                if (!status.idealK)  feedback.push(`Current Potassium is ${currentSoil.K}. ${displayName} needs at least ${plant.K}.`)
 
                 improve.innerHTML = feedback.join("<br>")
                 improve.style.display = "block"
