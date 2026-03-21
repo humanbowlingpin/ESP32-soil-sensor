@@ -34,7 +34,7 @@
                 <div id="improvement" class="improve-box"></div>
             </div>
             <details style="text-align: left;margin-top: 1em;">
-                <summary>status explained</summary>
+                <summary><span lang="en">Recommendations</span><span lang="th">คำแนะนำ</span></summary>
                 <h4>pH</h4>
                 <ul>
                     <li><strong>กรด</strong> - ดินมีความเปรี้ยวสูง แนะนำให้ปรับสภาพดิน เช่น นำปูนขาวโรยหน้าดินเพื่อปรับค่า pH</li>
@@ -210,20 +210,20 @@ const db = {
         
         function getStatusColor(status) {
             switch(status) {
-                case "good": return { bg: "#e8f5e9", text: "#2e7d32" }  // green
-                case "medium": return { bg: "#fff9c4", text: "#f57f17" } // yellow
-                case "low":  return { bg: "#fce4ec", text: "#c62828" }  // red
-                case "max":  return { bg: "#ede7f6", text: "#4527a0" }  // purple
-                case "suitable": return { bg: "#e8f5e9", text: "#2e7d32" }
-                case "too acidic": return { bg: "#fce4ec", text: "#c62828" }
-                case "too base": return { bg: "#fce4ec", text: "#c62828" }
-                default: return { bg: "#f5f5f5", text: "#333" }
+                case "good": return { bg: "#e8f5e9", text: "#2e7d32", th: "สูง" }  // green
+                case "medium": return { bg: "#fff9c4", text: "#f57f17", th: "เหมาะสม" } // yellow
+                case "low":  return { bg: "#fce4ec", text: "#c62828", th: "ต่ำ" }  // red
+                case "max":  return { bg: "#ede7f6", text: "#4527a0", th: "สูงเกินไป" }  // purple
+                case "suitable": return { bg: "#e8f5e9", text: "#2e7d32", th: "เหมาะสม" }
+                case "too acidic": return { bg: "#fce4ec", text: "#c62828", th: "กรด" }
+                case "too base": return { bg: "#fce4ec", text: "#c62828", th: "เบส" }
+                default: return { bg: "#f5f5f5", text: "#333", th: "ไม่ทราบ" }
             }
         }
         
         function coloredTd(status) {
             const c = getStatusColor(status)
-            return `<td style="background:${c.bg}; color:${c.text}; font-weight:bold">${status}</td>`
+            return `<td style="background:${c.bg}; color:${c.text}; font-weight:bold"><span lang="en">${status}</span><span lang="th">${c.th}</span></td>`
         }
 
 
@@ -253,22 +253,22 @@ const db = {
                 res.innerHTML = `<strong>❌ Not Ideal.</strong>`
                 resbox.style.backgroundColor = "#fff3e0"
             }
-            improve.innerHTML = `<table><tbody><tr><td>&nbsp;</td><th>pH</th><th>N</th><th>P</th> <th>K</           th></tr><tr><th>measured</th>
-            <td>${currentSoil.PH}</td>
-            <td>${currentSoil.N}</td>
-            <td>${currentSoil.P}</td>
-            <td>${currentSoil.K}</td>
-            </tr><tr><th>status</th>
-            ${coloredTd(statusText.pH)}
-            ${coloredTd(statusText.N)}
-            ${coloredTd(statusText.P)}
-            ${coloredTd(statusText.K)}
-            </tr><tr><th>recommend</th>
+            improve.innerHTML = `<table><tbody><tr><td>&nbsp;</td><th>pH</th><th>N</th><th>P</th> <th>K</           th></tr><tr><th><span lang="en">Recommend</span><span lang="th">ค่าที่เหมาะสม</span></th>
             <td>${plant.minPH} - ${plant.maxPH}</td>
             <td>${plant.N.good[0]} - ${plant.N.good[1]}</td>
             <td>${plant.P.good[0]} - ${plant.P.good[1]}</td>
             <td>${plant.K.good[0]} - ${plant.K.good[1]}</td>
-            </tr></tbody></table>`
+            </tr><tr><th><span lang="en">Measured</span><span lang="th">ค่าที่วัดได้</span></th>
+            <td>${currentSoil.PH}</td>
+            <td>${currentSoil.N}</td>
+            <td>${currentSoil.P}</td>
+            <td>${currentSoil.K}</td>
+            </tr><tr><th><span lang="en">Status</span><span lang="th">ผลการประเมิน</span></th>
+            ${coloredTd(statusText.pH)}
+            ${coloredTd(statusText.N)}
+            ${coloredTd(statusText.P)}
+            ${coloredTd(statusText.K)}
+            </tr></tbody></table>` 
             improve.style.display = "block"
         }
 
