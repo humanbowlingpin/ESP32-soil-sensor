@@ -177,6 +177,7 @@ html[lang="th"] *[lang]:not([lang="th"]) {
     overflow-y: auto;
     display: none;
     z-index: 999;
+    text-align: left;
 }
 
 .suggestion-item {
