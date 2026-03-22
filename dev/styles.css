@@ -212,8 +212,9 @@ tr > *:first-child, td {
         grid-template-columns: 1fr 1fr;
     }
 	.container {
-		padding: 1em;
+		padding: .8em;
 		border-radius: 0;
+		max-width: none;
 	}
 	body {
 		padding: 0;
@@ -221,4 +222,14 @@ tr > *:first-child, td {
 	.suggestions {
 		left: 2em;
 	}
+	
+	table {
+		font-size: 0.8em;
+	}
 }
+
+/* @media (max-width: 500px) {
+    body {
+        zoom: 0.7;
+    }
+} */
