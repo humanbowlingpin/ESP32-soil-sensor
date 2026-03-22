@@ -227,9 +227,3 @@ tr > *:first-child, td {
 		font-size: 0.8em;
 	}
 }
-
-/* @media (max-width: 500px) {
-    body {
-        zoom: 0.7;
-    }
-} */

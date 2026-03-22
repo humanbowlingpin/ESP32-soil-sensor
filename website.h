@@ -93,7 +93,6 @@ h3 {
 	padding: 12px;
 	border-radius: 10px;
 	border: 2px solid var(--primary);
-	/* border-left: 5px solid var(--primary); */
 }
 
 .label {
@@ -145,6 +144,10 @@ button {
 	margin: 0 auto;
 }
 
+.description-box {
+	display: none;
+}
+
 .msg-box, .recmsg-box {
 	display: block;
 	border: 1px solid #ccc;
@@ -175,6 +178,7 @@ html[lang="th"] *[lang]:not([lang="th"]) {
     overflow-y: auto;
     display: none;
     z-index: 999;
+    text-align: left;
 }
 
 .suggestion-item {
@@ -184,6 +188,11 @@ html[lang="th"] *[lang]:not([lang="th"]) {
 
 .suggestion-item:hover {
     background-color: #e5f5e5;
+}
+
+table {
+	width: 100%;
+	margin-top: 1em;
 }
 
 table, th, td {
@@ -204,8 +213,9 @@ tr > *:first-child, td {
         grid-template-columns: 1fr 1fr;
     }
 	.container {
-		padding: 1em;
+		padding: .8em;
 		border-radius: 0;
+		max-width: none;
 	}
 	body {
 		padding: 0;
@@ -213,17 +223,21 @@ tr > *:first-child, td {
 	.suggestions {
 		left: 2em;
 	}
+	
+	table {
+		font-size: 0.8em;
+	}
 }
 )rawliteral";
 
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <title>Soil Monitor</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
@@ -231,7 +245,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 <body>
     <div class="container">
         <h1 style="font-family: Kanit"><span lang="en">Soil Status</span><span lang="th">ตรวจวัดสถานะดิน</span></h1>
-        <div class="language-picker"><button id="language-switcher">thai / ภาษาไทย</button></div>
+        <div class="language-picker"><button id="language-switcher">English</button></div>
         <div class="grid">
             <div class="card"><span class="label"><span lang="en">Humidity</span><span lang="th">ความชื้น</span></span> : <span class="value">%HUMID% &percnt;</span></div>
             <div class="card"><span class="label"><span lang="en">Temperature</span><span lang="th">อุณหภูมิ</span></span> : <span class="value">%TEMP% °C</span></div>
@@ -253,22 +267,43 @@ const char index_html[] PROGMEM = R"rawliteral(
                 <div id="improvement" class="improve-box"></div>
             </div>
             <details style="text-align: left;margin-top: 1em;">
-                <summary><span lang="en">Recommendations</span><span lang="th">คำแนะนำ</span></summary>
+                <summary><span lang="en">Note</span><span lang="th">หมายเหตุ</span></summary>
+                <span lang="en">
+                <h4 id="ph">pH</h4>
+<ul>
+<li><strong style="color: #c62828;">Acidic</strong> – The soil is more acidic than the plants require. It is recommended to amend the soil, such as by sprinkling lime (calcium carbonate) on the surface to balance the pH. </li>
+<li><strong style="color: #f57f17;">Slightly Acidic</strong> – The soil is slightly more acidic than required, but it is not severely harmful. To maintain pH balance, you can sprinkle finely crushed eggshells into the soil or add a small amount of soil conditioner, such as lime.</li>
+<li><strong style="color: #2e7d32;">Ideal</strong> – The acidity-alkalinity levels are within the optimal range. Plants can fully and efficiently absorb nutrients. No soil adjustment is necessary. </li>
+<li><strong style="color: #1565c0;">Slightly Basic (Alkaline)</strong> – The soil is slightly more alkaline than required, which is not severely harmful. To maintain pH balance, you can flush the soil with plain water or add coffee grounds or dry leaves.</li>
+<li><strong style="color: #4527a0;">Highly Basic (Alkaline)</strong> – The soil is more alkaline than the plants require. It is recommended to amend the soil by adding organic fertilizer or mildly acidic bio-fermented water to adjust the pH.</li>
+</ul>
+<h4 id="npk">NPK</h4>
+<ul>
+<li><strong style="color: #f57f17;">Low</strong> – The soil lacks this nutrient, which may cause slow growth. You should add a fertilizer that focuses specifically on this element.</li>
+<li><strong style="color: #2e7d32;">Ideal</strong> – This nutrient is at an optimal level for plants, allowing for good absorption. It is recommended to provide small, periodic supplemental feedings to maintain soil fertility. </li>
+<li><strong style="color: #558b2f;">High</strong> – This nutrient is highly abundant. No additional fertilization is needed at this time. </li>
+<li><strong style="color: #c62828;">Too High</strong> – The nutrient level is excessive, which may lead to root or leaf burn. You should water slightly more than usual to help flush out the excess</li>
+</ul>
+<p>**Balanced fertilizer refers to chemical fertilizers such as 15-15-15, 16-16-16, or 20-20-20.</p>
+                </span>
+                <span lang="th">
                 <h4>pH</h4>
                 <ul>
-                    <li><strong>กรด</strong> - ดินมีความเปรี้ยวสูง แนะนำให้ปรับสภาพดิน เช่น นำปูนขาวโรยหน้าดินเพื่อปรับค่า pH</li>
-                    <li><strong>กรดเล็กน้อย</strong> - ดินมีความเปรี้ยวเล็กน้อย ไม่ส่งผลเสียรุนแรง หากต้องการรักษาสมดุลค่า pH สามารถโรยเปลือกไข่บดละเอียดลงในดิน หรือเติมสารปรับปรุงดินเพียงเล็กน้อยเช่น ปูนขาว ได้</li>
-                    <li><strong>เหมาะสม</strong> - ความเป็นกรด - ด่างอยู่ในเกณฑ์ที่เหมาะสม พืชสามารถดูดซึมสารอาหารได้อย่างเต็มประสิทธิภาพ ไม่จำเป็นต้องปรับสภาพดิน</li>
-                    <li><strong>เบสเล็กน้อย</strong> - ดินมีความด่างเล็กน้อย ไม่ส่งผลเสียรุนแรง หากต้องการรักษาสมดุลค่า pH สามารถชะล้างดินด้วยน้ำเปล่า เติมกากกาแฟหรือใบไม้แห้ง ได้</li>
-                    <li><strong>เบสมาก</strong> - ดินมีความด่างสูง แนะนำให้ปรับสภาพดิน เช่น เติมปุ๋ยอินทรีย์หรือน้ำหมักชีวภาพที่มีฤทธิ์เป็นกรดอ่อน ๆ เพื่อปรับค่า pH</li>
+                    <li><strong style="color: #c62828;">กรด</strong> - ดินมีความเปรี้ยวสูงกว่าที่พืชต้องการ แนะนำให้ปรับสภาพดิน เช่น นำปูนขาวโรยหน้าดินเพื่อปรับค่า pH</li>
+                    <li><strong style="color: #f57f17;">กรดเล็กน้อย</strong> - ดินมีความเปรี้ยวกว่าที่พืชต้องการเล็กน้อย ไม่ส่งผลเสียรุนแรง หากต้องการรักษาสมดุลค่า pH สามารถโรยเปลือกไข่บดละเอียดลงในดิน หรือเติมสารปรับปรุงดินเพียงเล็กน้อยเช่น ปูนขาว ได้</li>
+                    <li><strong style="color: #2e7d32;">เหมาะสม</strong> - ความเป็นกรด - ด่างอยู่ในเกณฑ์ที่เหมาะสม พืชสามารถดูดซึมสารอาหารได้อย่างเต็มประสิทธิภาพ ไม่จำเป็นต้องปรับสภาพดิน</li>
+                    <li><strong style="color: #1565c0;">เบสเล็กน้อย</strong> - ดินมีความด่างกว่าที่พืชต้องการเล็กน้อย ไม่ส่งผลเสียรุนแรง หากต้องการรักษาสมดุลค่า pH สามารถชะล้างดินด้วยน้ำเปล่า เติมกากกาแฟหรือใบไม้แห้ง ได้</li>
+                    <li><strong style="color: #4527a0;">เบสมาก</strong> - ดินมีความด่างสูงกว่าที่พืชต้องการ แนะนำให้ปรับสภาพดิน เช่น เติมปุ๋ยอินทรีย์หรือน้ำหมักชีวภาพที่มีฤทธิ์เป็นกรดอ่อน ๆ เพื่อปรับค่า pH</li>
                 </ul>
                 <h4>NPK</h4>
                 <ul>
-                    <li><strong>ต่ำ</strong> - ดินขาดธาตุอาหารนี้ พืชอาจเติบโตช้า ควรเติมปุ๋ยที่เน้นธาตุนี้</li>
-                    <li><strong>เหมาะสม</strong> - ธาตุอาหารนี้ อยู่ในระดับที่เหมาะสมสำหรับพืช พืชสามารถดูดซึมไปใช้ได้ดี แนะนำให้บำรุงปุ๋ยเพิ่มเติมเพียงเล็กน้อยเป็นระยะ ๆ เพื่อรักษาความอุดมสมบูรณ์ของดิน</li>
-                    <li><strong>สูง</strong> - ธาตุอาหารนี้ มีความอุดมสมบูรณ์สูง ยังไม่จำเป็นต้องบำรุงเพิ่มเติมในขณะนี้</li>
-                    <li><strong>สูงเกินไป</strong> - ดินมีธาตุอาหารนี้ สูงเกินไป อาจส่งผลให้พืชเกิดอาการรากหรือใบไหม้ได้ ควรรดน้ำในปริมาณที่มากกว่าปกติเล็กน้อย เพื่อชะล้างธาตุอาหารส่วนเกิน</li>
+                    <li><strong style="color: #f57f17;">ต่ำ</strong> - ดินขาดธาตุอาหารนี้ พืชอาจเติบโตช้า ควรเติมปุ๋ยที่เน้นธาตุนี้</li>
+                    <li><strong style="color: #2e7d32;">เหมาะสม</strong> - ธาตุอาหารนี้ อยู่ในระดับที่เหมาะสมสำหรับพืช พืชสามารถดูดซึมไปใช้ได้ดี แนะนำให้บำรุงปุ๋ยเพิ่มเติมเพียงเล็กน้อยเป็นระยะ ๆ เพื่อรักษาความอุดมสมบูรณ์ของดิน</li>
+                    <li><strong style="color: #558b2f;">สูง</strong> - ธาตุอาหารนี้ มีความอุดมสมบูรณ์สูง ยังไม่จำเป็นต้องบำรุงเพิ่มเติมในขณะนี้</li>
+                    <li><strong style="color: #c62828;">สูงเกินไป</strong> - ดินมีธาตุอาหารนี้ สูงเกินไป อาจส่งผลให้พืชเกิดอาการรากหรือใบไหม้ได้ ควรรดน้ำในปริมาณที่มากกว่าปกติเล็กน้อย เพื่อชะล้างธาตุอาหารส่วนเกิน</li>
                 </ul>
+                <p>**ปุ๋ยสูตรเสมอคือปุ๋ยเคมีเช่น 15-15-15, 16-16-16, หรือ 20-20-20</p>
+                </span>
             </details>
         </div>
 
@@ -280,7 +315,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     <script>
     const inputEl = document.querySelector("#plantIn");
     const suggestionBox = document.querySelector("#suggestions");
-    let currentLang = "en"
+    let currentLang = "th"
     const languageButton = document.querySelector("#language-switcher")
         
     if(languageButton) {
@@ -297,63 +332,246 @@ const char index_html[] PROGMEM = R"rawliteral(
         suggestionBox.style.display = "none"
     }
 
-const PRESETPAKBAI = {
-    N: {
-        low: [0,60],
-        med: [60,100],
-        good: [101,200],
-        max: [200,1000]
-    },
-    P: {
-        low: [0,10],
-        med: [10,20],
-        good: [20,200],
-        max: [200,1000]
-    },
-    K: {
-        low: [0,60],
-        med: [60,100],
-        good: [101,200],
-        max: [200,1000]
-    }  
-}
-
 const db = {
-    tomato: {
-        names: { en: "tomato", th: "มะเขือเทศ" },
+    cabbage: {
+        names: { en: "cabbage", th: "กะหล่ำปลี" },
+        minPH: 6.5,
+        maxPH: 7.0,
+        info: {
+            th: 'กะหล่ำปลีชอบอากาศเย็นและ "แดดจัด ดินร่วนมีปุ๋ยมาก" เริ่มจากเพาะกล้าจนแข็งแรงก่อนย้ายลงแปลง รดน้ำเช้า-เย็นให้ดินชุ่มชื้นตลอดเวลา ใส่ปุ๋ยเน้น N ในช่วงแรกเพื่อสร้างใบ และใส่ปุ๋ยสูตรเสมอเมื่อเริ่มเข้าหัวเพื่อให้หัวแน่นและหนัก พร้อมเก็บเกี่ยวใน 60-90 วัน (ขึ้นอยู่กับสายพันธุ์)',
+            en: 'Cabbage prefers cool weather and "Full Sun, Highly Fertilized Loose Soil." Start by raising seedlings until strong before transplanting to the bed. Water morning and evening to keep the soil moist at all times. Apply N-heavy fertilizer in the early stages to build leaves, and switch to balanced fertilizer when the head begins to form for a dense and heavy head. Harvest within 60–90 days (depending on the variety).'
+        },
+        N: [144, 195, 200],
+        P: [12, 16, 50],
+        K: [118,131,200]
+    },
+        chilli: {
+        names: { en: "chilli", th: "พริก" },
+        minPH: 6.0,
+        maxPH: 6.5,
+        info: {
+            en: 'Chilis love heat and "Full Sun, Loose, Non-Soggy Soil." Start by sowing seeds in a nursery medium until 3–4 true leaves appear, then transplant. Water once daily in the morning. Apply balanced fertilizer every 15 days and switch to K-heavy fertilizer when flowering begins to ensure high yield and heat. The first harvest can be made 60–90 days after planting.',
+            th: 'พริกชอบความร้อนและ "แดดจัด ดินร่วนไม่แฉะ" เริ่มจากเพาะเมล็ดในวัสดุเพาะจนมีใบจริง 3-4 ใบจึงย้ายปลูก รดน้ำวันละ 1 ครั้งในช่วงเช้า ใส่ปุ๋ยสูตรเสมอทุก 15 วัน และเพิ่มปุ๋ยเน้น K เมื่อเริ่มออกดอกเพื่อให้ผลดกและเผ็ดร้อน เก็บเกี่ยวผลผลิตครั้งแรกได้หลังปลูก 60-90 วัน'
+        },
+        N: [50, 150, 200],
+        P: [4, 14, 50],
+        K: [50, 150, 200]
+    },
+        garlic: {
+        names: { en: "garlic", th: "กระเทียม" },
+        minPH: 6.5,
+        maxPH: 7.5,
+        info: {
+            th: 'พืชหัวกลุ่มนี้ชอบสภาพ "แดดจัด อากาศเย็น ดินร่วนซุย" เริ่มจากคัดหัวที่สมบูรณ์ปักลงดินลึก 1-2 นิ้ว คลุมหน้าดินด้วยฟาง แกลบ หรือเศษใบไม้แห้งเพื่อรักษาความชื้นและควบคุมวัชพืช รดน้ำสม่ำเสมอในช่วงแรกและค่อยๆ ลดปริมาณน้ำลงเมื่อพืชเริ่มลงหัว ใส่ปุ๋ยเน้น P-K เพื่อบำรุงหัวให้สมบูรณ์ พร้อมเก็บเกี่ยวเมื่อใบเริ่มแห้งเหลือง โดยใช้เวลาประมาณ 90-120 วัน',
+            en: 'This bulb crop prefers "Full Sun, Cool Weather, Loose Soil." Start by selecting healthy cloves and planting them 1–2 inches deep. Cover the soil surface with straw, rice husks, or dry leaves to maintain moisture and control weeds. Water consistently in the early stages and gradually reduce water once the bulbs begin to form. Apply P-K (Phosphorus-Potassium) heavy fertilizer to nourish bulb development. Harvest when the leaves begin to turn yellow and dry, typically taking 90–120 days.'
+        },
+        N: [20, 30, 80],
+        P: [25, 40, 50],
+        K: [120, 150, 200]
+    },
+        shallot: {
+        names: { en: "shallot", th: "หอมแดง" },
+        minPH: 5.0,
+        maxPH: 6.5,
+        info: {
+            en: 'This bulb crop prefers "Full Sun, Cool Weather, Loose Soil." Start by selecting healthy bulbs and planting them 1–2 inches deep. Cover the soil surface with straw, rice husks, or dry leaves to maintain moisture and control weeds. Water consistently in the early stages and gradually reduce water once the bulbs begin to form. Apply P-K heavy fertilizer to nourish bulb development. Harvest when the leaves begin to turn yellow and dry, typically taking 60–70 days.',
+            th: 'พืชหัวกลุ่มนี้ชอบสภาพ "แดดจัด อากาศเย็น ดินร่วนซุย" เริ่มจากคัดหัวที่สมบูรณ์ปักลงดินลึก 1-2 นิ้ว คลุมหน้าดินด้วยฟาง แกลบ หรือเศษใบไม้แห้งเพื่อรักษาความชื้นและควบคุมวัชพืช รดน้ำสม่ำเสมอในช่วงแรกและค่อยๆ ลดปริมาณน้ำลงเมื่อพืชเริ่มลงหัว ใส่ปุ๋ยเน้น P-K เพื่อบำรุงหัวให้สมบูรณ์ พร้อมเก็บเกี่ยวเมื่อใบเริ่มแห้งเหลือง โดยใช้เวลาประมาณ 60-70 วัน'
+        },
+        N: [25, 35, 80],
+        P: [20, 30, 50],
+        K: [130, 160, 200]
+    },
+        "water spinach": {
+        names: { en: "water spinach", th: "ผักบุ้ง" },
         minPH: 6.0,
         maxPH: 6.8,
         info: {
-            en: "Needs slightly acidic soil.",
-            th: "ต้องการดินเป็นกรดเล็กน้อย"
+            en: 'Water spinach is a leaf-consuming plant that loves "Full Sun, Abundant Water." Start by soaking seeds in water for 24–48 hours to encourage germination before sowing in loose soil. Place pots or garden beds in a spot that receives full sun all day and water at least twice daily (morning and evening). You may apply N-heavy (Nitrogen) fertilizer to ensure the stalks are plump, crunchy, and grow fast, starting about 7 days after planting. Since it has a short life cycle, 1–2 fertilizer applications are sufficient. Harvest within 20–30 days.',
+            th: 'ผักบุ้งเป็นพืชบริโภคส่วนใบที่ชอบ "แดดจัด น้ำถึง" เริ่มจากนำเมล็ดแช่น้ำ 24-48 ชม. เพื่อให้รากงอก ก่อนนำไปลงดินที่ร่วนซุย ตั้งกระถางหรือแปลงในจุดที่ได้รับแดดเต็มวัน และรดน้ำอย่างน้อยวันละ 2 ครั้ง (เช้า-เย็น) อาจจะใส่ปุ๋ยที่เน้น N เพื่อให้ต้นอวบ กรอบ โตไว โดยเริ่มใส่หลังปลูกประมาณ 7 วัน และเนื่องจากผักบุ้งอายุสั้นจึงใส่ปุ๋ย 1-2 ครั้งก็เพียงพอ พร้อมเก็บเกี่ยวใน 20-30 วัน'
         },
-        N: PRESETPAKBAI.N,
-        P: PRESETPAKBAI.P,
-        K: PRESETPAKBAI.K, 
+        N: [100, 170, 200],
+        P: [25, 45, 50],
+        K: [80, 150, 200]
     },
-    lavender: {
-        names: { en: "lavender", th: "ลาเวนเดอร์" },
-        minPH: 6.7,
-        maxPH: 7.3,
+        "chinese broccoli": {
+        names: { en: "chinese broccoli", th: "คะน้า" },
+        minPH: 6.0,
+        maxPH: 7.5,
         info: {
-            en: "Likes alkaline soil and sun.",
-            th: "ชอบดินด่างและแสงแดด"
+            en: 'Chinese broccoli loves "Full Sun, Abundant Water." Start by sowing seeds in loose, well-draining soil. Water consistently every morning and evening. Apply N-heavy fertilizer 7–10 days after planting to promote thick stalks and crisp leaves. Watch out for diamondback moths during the growth stage. Harvest within 45–55 days.',
+            th: 'คะน้าเป็นผักที่ชอบ "แดดจัด น้ำถึง" เริ่มจากหว่านเมล็ดลงในดินร่วนซุยที่ระบายน้ำได้ดี รดน้ำสม่ำเสมอเช้า-เย็น ใส่ปุ๋ยเน้น N หลังปลูก 7-10 วัน เพื่อให้ลำต้นอวบใหญ่และใบกรอบ ระวังเรื่องหนอนใยผักในช่วงการเจริญเติบโต พร้อมเก็บเกี่ยวใน 45-55 วัน'
         },
-        N: PRESETPAKBAI.N,
-        P: PRESETPAKBAI.P,
-        K: PRESETPAKBAI.K, 
+        N: [50, 150, 200],
+        P: [4, 14, 50],
+        K: [50, 150, 200]
     },
-    rice: {
-        names: { en: "rice", th: "ข้าว" },
+        "bok choy": {
+        names: { en: "bok choy", th: "กวางตุ้ง" },
+        minPH: 6.0,
+        maxPH: 7.0,
+        info: {
+            en: 'Bok choy grows best in "All-day Sun, Moist Soil." Start by sowing seeds in rows in loose soil mixed with manure. Cover with a thin layer of soil. Water twice daily; do not let the soil dry out as the plant will wilt and grow slowly. Apply leaf-boosting fertilizer 7 days after planting and again at 20 days for succulent stems and a sweet flavor. Harvest within 30–45 days.',
+            th: 'กวางตุ้งเติบโตได้ดีในสภาพ "แดดตลอดวัน ดินชุ่มชื้น" เริ่มจากโรยเมล็ดเป็นแถวในดินร่วนผสมปุ๋ยคอก กลบดินบางๆ รดน้ำวันละ 2 ครั้ง อย่าให้ขาดน้ำเพราะต้นจะเหี่ยวและโตช้า ใส่ปุ๋ยเร่งใบหลังปลูก 7 วัน และอีกครั้งเมื่ออายุ 20 วัน เพื่อให้ก้านใบอวบน้ำและมีรสหวาน พร้อมเก็บเกี่ยวใน 30-45 วัน'
+        },
+        N: [100, 170, 200],
+        P: [25, 45, 50],
+        K: [80, 150, 200]
+    },
+        lettuce: {
+        names: { en: "lettuce", th: "ผักกาดหอม" },
+        minPH: 6.0,
+        maxPH: 7.0,
+        info: {
+            en: 'This group of salad greens focuses on freshness and crunch. They prefer "Partial to Full Sun, Moderate Water." Start by sowing seeds in a tray before transplanting to soil mixed with high organic matter. Water twice a day; avoid water shortages as this causes the leaves to taste bitter. Apply N-heavy fertilizer only 1–2 times during the 2nd and 4th weeks. Harvest for freshness within 40–50 days.',
+            th: 'ผักกาดหอมกลุ่มนี้เน้นความสดกรอบ ชอบ "แดดรำไรถึงแดดจัด น้ำพอดี" เริ่มจากเพาะเมล็ดในกระบะก่อนย้ายลงดินที่ผสมอินทรียวัตถุสูง รดน้ำวันละ 2 ครั้ง ระวังอย่าให้ขาดน้ำเพราะจะทำให้ใบมีรสขม ใส่ปุ๋ยเน้น N เพียง 1-2 ครั้งในช่วงสัปดาห์ที่ 2 และ 4 พร้อมเก็บเกี่ยวความสดได้ใน 40-50 วัน'
+        },
+        N: [150, 180, 200],
+        P: [30, 50, 70],
+        K: [150, 180, 200]
+    },
+        "napa cabbage": {
+        names: { en: "napa cabbage", th: "ผักกาดขาว" },
+        minPH: 6.0,
+        maxPH: 7.0,
+        info: {
+            en: 'Napa cabbage prefers good ventilation and "Full Sun, High-Organic Loose Soil." Start by sowing seeds in a nursery tray until seedlings are strong, then transplant to the bed. Water thoroughly and consistently every morning and evening. Apply manure or balanced fertilizer to nourish the head for a beautiful shape and sweet, crisp leaves. Be careful of root rot if the water remains stagnant. Harvest within 40–60 days (depending on the variety).',
+            th: 'ผักกาดขาวชอบอากาศถ่ายเทและ "แดดจัด ดินร่วนอินทรีย์สูง" เริ่มจากเพาะเมล็ดในกระบะเพาะจนต้นกล้าแข็งแรงจึงย้ายลงแปลง รดน้ำให้ชุ่มสม่ำเสมอเช้า-เย็น ใส่ปุ๋ยคอกหรือปุ๋ยสูตรเสมอเพื่อบำรุงหัวให้ห่อตัวสวยและใบกรอบหวาน ระวังเรื่องโรครากเน่าหากน้ำขังเกินไป พร้อมเก็บเกี่ยวใน 40-60 วัน (ขึ้นอยู่กับสายพันธุ์)'
+        },
+        N: [180, 190,  200],
+        P: [14, 19, 50],
+        K: [120, 180, 200]
+    },
+        "iceberg lettuce": {
+        names: { en: "iceberg lettuce", th: "ผักกาดแก้ว" },
+        minPH: 6.0,
+        maxPH: 7.0,
+        info: {
+            en: 'Iceberg lettuce prefers good ventilation and "Full Sun, High-Organic Loose Soil." Start by sowing seeds in a nursery tray until seedlings are strong, then transplant to the bed. Water thoroughly and consistently every morning and evening. Apply manure or balanced fertilizer to nourish the head for a beautiful shape and sweet, crisp leaves. Be careful of root rot if the water remains stagnant. Harvest within 40–60 days (depending on the variety).',
+            th: 'ผักกาดแก้วชอบอากาศถ่ายเทและ "แดดจัด ดินร่วนอินทรีย์สูง" เริ่มจากเพาะเมล็ดในกระบะเพาะจนต้นกล้าแข็งแรงจึงย้ายลงแปลง รดน้ำให้ชุ่มสม่ำเสมอเช้า-เย็น ใส่ปุ๋ยคอกหรือปุ๋ยสูตรเสมอเพื่อบำรุงหัวให้ห่อตัวสวยและใบกรอบหวาน ระวังเรื่องโรครากเน่าหากน้ำขังเกินไป พร้อมเก็บเกี่ยวใน 40-60 วัน (ขึ้นอยู่กับสายพันธุ์)'
+        },
+        N: [120, 150, 200],
+        P: [35, 50, 70],
+        K: [150, 190, 200]
+    },
+        "spring onion": {
+        names: { en: "spring onion", th: "ต้นหอมไทย" },
+        minPH: 6.0,
+        maxPH: 7.0,
+        info: {
+            en: 'Spring onions are easy to grow from both seeds and bulbs. They love "Full Sun, Well-Draining Loose Soil." If planting with bulbs, bury them only halfway into the soil. Water morning and evening but be careful not to make it soggy to avoid root rot. Apply manure or balanced fertilizer 10 days after planting for deep green leaves and healthy clumps. Ready to pull or cut for cooking within 40–45 days.',
+            th: 'ต้นหอมไทยปลูกง่ายได้ทั้งเมล็ดและหัว ชอบ "แดดจัด ดินร่วนระบายน้ำดี" หากปลูกด้วยหัว ให้ฝังลงดินเพียงครึ่งหัว รดน้ำเช้า-เย็นแต่ระวังอย่าให้แฉะจนรากเน่า ใส่ปุ๋ยคอกหรือปุ๋ยสูตรเสมอหลังปลูก 10 วัน เพื่อให้ใบเขียวเข้มและแตกกอ พร้อมถอนกินหรือตัดใบไปประกอบอาหารได้ใน 40-45 วัน'
+        },
+        N: [20, 60, 80],
+        P: [15, 35, 50],
+        K: [120, 160, 200]
+    },
+        "thai basil": {
+        names: { en: "thai basil", th: "ใบโหระพา" },
+        minPH: 5.5,
+        maxPH: 6.0,
+        info: {
+            en: 'This aromatic group loves "Moderate Sun, Moist Soil." They can be easily grown by taking healthy cuttings and planting them in loose soil. Water 1–2 times daily. Regularly pinch off flowers and harvest the tips for eating to stimulate new bushy growth. Apply manure to nourish the soil once a month. Leaves can be harvested continuously starting 30 days after planting.',
+            th: 'ผักกลิ่นหอมกลุ่มนี้ชอบ "แดดพอดี ดินชุ่มชื้น" สามารถปลูกได้ง่ายด้วยการปักชำกิ่งที่สมบูรณ์ลงในดินร่วน รดน้ำวันละ 1-2 ครั้ง หมั่นเด็ดดอกทิ้งและเด็ดยอดไปกินเพื่อกระตุ้นให้แตกพุ่มใหม่ ใส่ปุ๋ยคอกบำรุงดินเดือนละครั้ง สามารถเก็บเกี่ยวใบได้เรื่อยๆ หลังปลูกเพียง 30 วัน'
+        },
+        N: [104, 180, 200],
+        P: [12, 38, 50],
+        K: [73, 120, 200]
+    },
+        coriander: {
+        names: { en: "coriander", th: "ผักชี" },
+        minPH: 6.0,
+        maxPH: 6.5,
+        info: {
+            en: 'Coriander prefers cool weather and "Partial Sun, Well-Draining Loose Soil." Start by gently crushing the seeds into two halves and soaking them for 1 night before sowing. Water just enough to keep moist every morning and evening. Apply a small amount of balanced fertilizer 15 days after germination. Coriander does not like concentrated chemical fertilizers as the roots may burn. Ready to harvest (including roots) in 40–45 days.',
+            th: 'ผักชีชอบอากาศเย็นและ "แดดรำไร ดินร่วนระบายน้ำเก่ง" เริ่มจากบดเมล็ดให้แตกเป็นสองซีกแช่น้ำ 1 คืนก่อนหว่าน รดน้ำพอชุ่มเช้า-เย็น ใส่ปุ๋ยสูตรเสมอเพียงเล็กน้อยหลังงอก 15 วัน ผักชีไม่ชอบปุ๋ยเคมีเข้มข้นเพราะรากอาจไหม้ได้ พร้อมเก็บเกี่ยวทั้งรากใน 40-45 วัน',
+        },
+        N: [20, 30, 80],
+        P: [25, 40, 50],
+        K: [150, 180, 200]
+    },
+        "lemon balm": {
+        names: { en: "lemon balm", th: "สะระแหน่" },
+        minPH: 5.5,
+        maxPH: 6.0,
+        info: {
+            en: 'This aromatic group loves "Moderate Sun, Moist Soil." They can be easily grown by taking healthy cuttings and planting them in loose soil. Water 1–2 times daily. Regularly pinch off flowers and harvest the tips for eating to stimulate new bushy growth. Apply manure to nourish the soil once a month. Leaves can be harvested continuously starting 30 days after planting.',
+            th: 'ผักกลิ่นหอมกลุ่มนี้ชอบ "แดดพอดี ดินชุ่มชื้น" สามารถปลูกได้ง่ายด้วยการปักชำกิ่งที่สมบูรณ์ลงในดินร่วน รดน้ำวันละ 1-2 ครั้ง หมั่นเด็ดดอกทิ้งและเด็ดยอดไปกินเพื่อกระตุ้นให้แตกพุ่มใหม่ ใส่ปุ๋ยคอกบำรุงดินเดือนละครั้ง สามารถเก็บเกี่ยวใบได้เรื่อยๆ หลังปลูกเพียง 30 วัน'
+        },
+        N: [25, 30, 200],
+        P: [30, 40, 50],
+        K: [170, 180, 200]
+    },
+        galangal: {
+        names: { en: "galangal", th: "ข่า" },
+        minPH: 5.5,
+        maxPH: 7.0,
+        info: {
+            en: 'This rhizome crop prefers "Partial to Full Sun, Deep Loose Soil." Start by planting rhizome pieces with "eyes" 5–10 cm deep. Water once a day to keep moist but not soggy. Nourish with manure every 1–2 months to expand the rhizomes. Young galangal can be harvested from 4–6 months (tingly texture, mild scent), or wait for mature rhizomes at 8–12 months for a concentrated aroma.',
+            th: 'พืชเหง้ากลุ่มนี้ชอบสภาพ "แดดรำไรถึงแดดจัด ดินร่วนลึก" เริ่มจากนำท่อนพันธุ์ที่มีตาฝังดินลึก 5-10 ซม. รดน้ำวันละครั้งให้ชุ่มแต่ไม่แฉะ บำรุงด้วยปุ๋ยคอกทุก 1-2 เดือนเพื่อขยายเหง้า เก็บข่าอ่อนได้ตั้งแต่ 4-6 เดือน (เนื้อซ่า กลิ่นไม่แรง) หรือรอให้เหง้าแก่จัดใน 8-12 เดือนเพื่อให้ได้กลิ่นหอมเข้มข้น'
+        },
+        N: [20, 35, 80],
+        P: [20, 40, 50],
+        K: [150, 180, 200]
+    },
+        tomato: {
+        names: { en: "tomato", th: "มะเขือเทศ" },
+        minPH: 5.5,
+        maxPH: 7.5,
+        info: {
+            en: 'Tomatoes love "Full Sun, Good Ventilation, Consistent Water." Start by raising seedlings and transplanting them into soil mixed heavily with manure. Water at the base of the plant; avoid getting water on the leaves to reduce fungal diseases. Apply balanced fertilizer in the early stages and focus on K-heavy fertilizer once fruit begins to set. Harvest ripe fruit in 70–90 days.',
+            th: 'มะเขือเทศชอบ "แดดจัด อากาศถ่ายเท น้ำสม่ำเสมอ" เริ่มจากเพาะกล้าแล้วย้ายปลูกในดินที่ผสมปุ๋ยคอกหนาแน่น รดน้ำที่โคนต้นอย่าให้โดนใบเพื่อลดโรคเชื้อรา ใส่ปุ๋ยสูตรเสมอในช่วงแรกและเน้นปุ๋ย K เมื่อเริ่มออกผล พร้อมเก็บเกี่ยวผลสุกได้ใน 70-90 วัน'
+        },
+        N: [33, 60, 100],
+        P: [25, 35, 50],
+        K: [110, 140, 200]
+    },
+        cucumber: {
+        names: { en: "cucumber", th: "แตงกวา" },
+        minPH: 5.5,
+        maxPH: 7.5,
+        info: {
+            en: 'This climbing annual prefers "Full Sun, Sandy Loam Soil." Start by sowing seeds in holes and providing a trellis for climbing. Water twice daily consistently, especially during flowering and fruiting. Apply P-K heavy fertilizer to nourish the fruits. Harvest cucumbers in 30–40 days.',
+            th: 'พืชล้มลุกกลุ่มเลื้อยชอบ "แดดจัด ดินร่วนปนทราย" เริ่มจากหยอดเมล็ดลงหลุมและเตรียมค้างให้เลื้อย รดน้ำวันละ 2 ครั้งอย่างสม่ำเสมอโดยเฉพาะช่วงออกดอกและติดผล ใส่ปุ๋ยเน้น P-K เพื่อบำรุงฝักและผลให้สมบูรณ์ เก็บเกี่ยวแตงกวาได้ใน 30-40 วัน'
+        },
+        N: [160, 180, 200],
+        P: [15, 25, 50],
+        K: [140, 180, 200]
+    },
+        "yardlong bean": {
+        names: { en: "yardlong bean", th: "ถั่วฝักยาว" },
+        minPH: 5.5,
+        maxPH: 6.7,
+        info: {
+            en: 'This climbing annual prefers "Full Sun, Sandy Loam Soil." Start by sowing seeds in holes and providing a trellis for climbing. Water twice daily consistently, especially during flowering and fruiting. Apply P-K heavy fertilizer to nourish the pods. Harvest long beans in 50–60 days.',
+            th: 'พืชล้มลุกกลุ่มเลื้อยชอบ "แดดจัด ดินร่วนปนทราย" เริ่มจากหยอดเมล็ดลงหลุมและเตรียมค้างให้เลื้อย รดน้ำวันละ 2 ครั้งอย่างสม่ำเสมอโดยเฉพาะช่วงออกดอกและติดผล ใส่ปุ๋ยเน้น P-K เพื่อบำรุงฝักและผลให้สมบูรณ์ เก็บเกี่ยวถั่วฝักยาวใน 50-60 วัน'
+        },
+        N: [20, 40, 80],
+        P: [15, 20, 50],
+        K: [120, 160, 200]
+    },
+        "key lime": {
+        names: { en: "key lime", th: "มะนาว" },
         minPH: 5.5,
         maxPH: 6.5,
         info: {
-            en: "Needs acidic soil and plenty of water.",
-            th: "ต้องการดินเป็นกรดและน้ำมาก"
+            en: 'Key limes love "Full Day Sun, Excellent Drainage." Commonly grown from air-layered cuttings for faster results. Water once daily in the morning. Apply manure regularly and supplement with chemical fertilizers according to the growth stage. Regularly prune branches to keep the canopy airy and reduce pests. Ready for harvest within the first year (for air-layered cuttings).',
+            th: 'มะนาวชอบ "แดดจัดเต็มวัน ดินระบายน้ำดีเยี่ยม" นิยมปลูกด้วยกิ่งตอนเพื่อให้ได้ผลไว รดน้ำวันละครั้งในช่วงเช้า ใส่ปุ๋ยคอกสม่ำเสมอและเสริมด้วยปุ๋ยเคมีตามระยะการเจริญเติบโต หมั่นตัดแต่งกิ่งให้โปร่งเพื่อลดศัตรูพืช พร้อมเก็บเกี่ยวผลผลิตได้ในปีแรก (สำหรับกิ่งตอน)'
         },
-        N: PRESETPAKBAI.N,
-        P: PRESETPAKBAI.P,
-        K: PRESETPAKBAI.K, 
+        N: [25, 50, 80],
+        P: [30, 40, 50],
+        K: [150, 180, 200]
+    },
+        ginger: {
+        names: { en: "ginger", th: "ขิง" },
+        minPH: 6.0,
+        maxPH: 7.0,
+        info: {
+            en: 'Ginger prefers "Partial to Full Sun, Deep Loose Soil." Start by planting rhizome pieces with "eyes" 5–10 cm deep. Water once a day to keep moist but not soggy. Nourish with manure every 1–2 months to expand the rhizomes. Young ginger can be harvested at 5–6 months, or wait until the leaves begin to dry (8–12 months) to harvest mature ginger with a spicy, hot flavor.',
+            th: 'ขิงชอบสภาพ "แดดรำไรถึงแดดจัด ดินร่วนลึก" เริ่มจากนำท่อนพันธุ์ที่มีตาฝังดินลึก 5-10 ซม. รดน้ำวันละครั้งให้ชุ่มแต่ไม่แฉะ บำรุงด้วยปุ๋ยคอกทุก 1-2 เดือนเพื่อขยายเหง้า เก็บขิงอ่อนได้ใน 5-6 เดือน หรือรอจนใบเริ่มแห้ง (8-12 เดือน) เพื่อเก็บขิงแก่ที่มีรสเผ็ดร้อน' 
+        },
+        N: [25, 40, 80],
+        P: [30, 50, 80],
+        K: [160, 200, 250]
     },
 }
 
@@ -366,10 +584,10 @@ const db = {
 
         function getPlantStatus(plant) {
             const status = {
-                idealPH: currentSoil.PH >= plant.minPH && currentSoil.PH <= plant.maxPH,
-                idealN: currentSoil.N >= plant.N.med[0] && currentSoil.N <= plant.N.good[1] ,
-                idealP: currentSoil.P >= plant.P.med[0] && currentSoil.P <= plant.P.good[1] ,
-                idealK: currentSoil.K >= plant.K.med[0] && currentSoil.K <= plant.K.good[1] , 
+                idealPH: (currentSoil.PH >= plant.minPH && currentSoil.PH <= plant.maxPH) || (Math.abs(currentSoil.PH - plant.minPH) <= 0.5),
+                idealN: currentSoil.N >= plant.N[0] && currentSoil.N <= plant.N[2] ,
+                idealP: currentSoil.P >= plant.P[0] && currentSoil.P <= plant.P[2] ,
+                idealK: currentSoil.K >= plant.K[0] && currentSoil.K <= plant.K[2] , 
             }
             status.isAllMatch = Object.values(status).every(v => v === true)
             return status
@@ -378,15 +596,15 @@ const db = {
         function getPlantStatusText(plant) {
           function compareNPK(minerals, value) {
               let result
-              if (value >= plant[minerals].med[0]) {
-                if (value >= plant[minerals].good[0]) {
-                  if (value >= plant[minerals].max[0]) {
-                    result = "max"
+              if (value >= plant[minerals][0]) {
+                if (value >= plant[minerals][1]) {
+                  if (value > plant[minerals][2]) {
+                    result = "too high"
                   } else {
-                    result = "good"
+                    result = "high"
                   }
                 } else {
-                  result = "medium"
+                  result = "ideal"
                 }
               } else {
                 result = "low"
@@ -397,11 +615,19 @@ const db = {
               let value = currentSoil.PH
               let result
               if (value <= plant.minPH) {
-                result = "too acidic"
+                if (plant.minPH - value <= 0.5) {
+                    result = "slightly acidic"
+                } else {
+                    result = "highly acidic"
+                }
               } else if (value <= plant.maxPH) {
-                result = "suitable"
+                result = "ideal"
               } else {
-                result = "too base"
+                if (value - plant.maxPH <= 0.5) {
+                    result = "slightly base"
+                } else {
+                    result = "highly base"
+                }
               }
               return result
             }
@@ -429,13 +655,14 @@ const db = {
         
         function getStatusColor(status) {
             switch(status) {
-                case "good": return { bg: "#e8f5e9", text: "#2e7d32", th: "สูง" }  // green
-                case "medium": return { bg: "#fff9c4", text: "#f57f17", th: "เหมาะสม" } // yellow
-                case "low":  return { bg: "#fce4ec", text: "#c62828", th: "ต่ำ" }  // red
-                case "max":  return { bg: "#ede7f6", text: "#4527a0", th: "สูงเกินไป" }  // purple
-                case "suitable": return { bg: "#e8f5e9", text: "#2e7d32", th: "เหมาะสม" }
-                case "too acidic": return { bg: "#fce4ec", text: "#c62828", th: "กรด" }
-                case "too base": return { bg: "#fce4ec", text: "#c62828", th: "เบส" }
+                case "high": return { bg: "#f1f8e9", text: "#558b2f", th: "สูง" }           // dull-green
+                case "low":  return { bg: "#fff9c4", text: "#f57f17", th: "ต่ำ" }            // yellow
+                case "too high":  return { bg: "#fce4ec", text: "#c62828", th: "สูงเกินไป" } // red
+                case "ideal": return { bg: "#e8f5e9", text: "#2e7d32", th: "เหมาะสม" }   // green
+                case "highly acidic": return { bg: "#fce4ec", text: "#c62828", th: "กรด" }      // red
+                case "highly base": return { bg: "#ede7f6", text: "#4527a0", th: "เบส" }        // blue-purple
+                case "slightly acidic": return { bg: "#fff9c4", text: "#f57f17", th: "กรดเล็กน้อย" } // yellow-orange
+                case "slightly base": return { bg: "#e3f2fd", text: "#1565c0", th: "เบสเล็กน้อย" }   // light-blue
                 default: return { bg: "#f5f5f5", text: "#333", th: "ไม่ทราบ" }
             }
         }
@@ -466,17 +693,17 @@ const db = {
             const displayName = plant.names[currentLang]
 
             if (status.isAllMatch) {
-                res.innerHTML = `<strong>✅ Match!</strong><br>${plant.info[currentLang]}`
+                res.innerHTML = `<strong><span lang="en">${plant.names.en}</span><span lang="th">${plant.names.th}</span> ✅ <span lang="en">Match!</span><span lang="th">เหมาะสม</span></strong><br>`
                 resbox.style.backgroundColor = "#e8f5e9"
             } else {
-                res.innerHTML = `<strong>❌ Not Ideal.</strong>`
+                res.innerHTML = `<strong><span lang="en">${plant.names.en}</span><span lang="th">${plant.names.th}</span> ❌ <span lang="en">Not Ideal!</span><span lang="th">ไม่เหมาะสม</span></strong>`
                 resbox.style.backgroundColor = "#fff3e0"
             }
-            improve.innerHTML = `<table><tbody><tr><td>&nbsp;</td><th>pH</th><th>N</th><th>P</th> <th>K</           th></tr><tr><th><span lang="en">Recommend</span><span lang="th">ค่าที่เหมาะสม</span></th>
+            improve.innerHTML = `<table><tbody><tr><td>&nbsp;</td><th>pH</th><th>N</th><th>P</th><th>K</th></tr><tr><th><span lang="en">Recommend</span><span lang="th">ค่าที่เหมาะสม</span></th>
             <td>${plant.minPH} - ${plant.maxPH}</td>
-            <td>${plant.N.good[0]} - ${plant.N.good[1]}</td>
-            <td>${plant.P.good[0]} - ${plant.P.good[1]}</td>
-            <td>${plant.K.good[0]} - ${plant.K.good[1]}</td>
+            <td>${plant.N[0]} - ${plant.N[1]}</td>
+            <td>${plant.P[0]} - ${plant.P[1]}</td>
+            <td>${plant.K[0]} - ${plant.K[1]}</td>
             </tr><tr><th><span lang="en">Measured</span><span lang="th">ค่าที่วัดได้</span></th>
             <td>${currentSoil.PH}</td>
             <td>${currentSoil.N}</td>
@@ -487,7 +714,7 @@ const db = {
             ${coloredTd(statusText.N)}
             ${coloredTd(statusText.P)}
             ${coloredTd(statusText.K)}
-            </tr></tbody></table>` 
+            </tr></tbody></table><p><span lang="en">${plant.info.en}</span><span lang="th">${plant.info.th}</span></p>` 
             improve.style.display = "block"
         }
 
@@ -521,6 +748,7 @@ const db = {
                     if (!q) return true
                     return name.toLowerCase().includes(q)
                 })
+                .sort((a, b) => a.localeCompare(b, 'th'))
         }
 
         function showSuggestions(list) {
