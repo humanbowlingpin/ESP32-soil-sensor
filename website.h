@@ -4,6 +4,8 @@ const char style_css[] PROGMEM = R"rawliteral(
 	--bg: #f0f4f0;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 @font-face {
 	font-family: perth;
 	src: url(https://humanbowlingpin.github.io/random/soopafresh/soopafre.ttf);
@@ -141,7 +143,6 @@ button {
 	display: none;
 	text-align: left;
 	margin: 0 auto;
-	max-width: 450px;
 }
 
 .msg-box, .recmsg-box {
@@ -185,6 +186,19 @@ html[lang="th"] *[lang]:not([lang="th"]) {
     background-color: #e5f5e5;
 }
 
+table, th, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+th, td {
+  padding: .5em;
+}
+
+tr > *:first-child, td {
+	text-align: left;
+}
+
 @media (max-width: 500px) {
     .grid {
         grid-template-columns: 1fr 1fr;
@@ -199,7 +213,7 @@ html[lang="th"] *[lang]:not([lang="th"]) {
 	.suggestions {
 		left: 2em;
 	}
-} 
+}
 )rawliteral";
 
 const char index_html[] PROGMEM = R"rawliteral(
@@ -238,6 +252,24 @@ const char index_html[] PROGMEM = R"rawliteral(
                 <div id="result"><span lang="en">Enter a plant name to check dirt compatibility.</span><span lang="th">กรอกชื่อพืชเพื่อตรวจสอบความเข้ากันของดิน</span></div>
                 <div id="improvement" class="improve-box"></div>
             </div>
+            <details style="text-align: left;margin-top: 1em;">
+                <summary><span lang="en">Recommendations</span><span lang="th">คำแนะนำ</span></summary>
+                <h4>pH</h4>
+                <ul>
+                    <li><strong>กรด</strong> - ดินมีความเปรี้ยวสูง แนะนำให้ปรับสภาพดิน เช่น นำปูนขาวโรยหน้าดินเพื่อปรับค่า pH</li>
+                    <li><strong>กรดเล็กน้อย</strong> - ดินมีความเปรี้ยวเล็กน้อย ไม่ส่งผลเสียรุนแรง หากต้องการรักษาสมดุลค่า pH สามารถโรยเปลือกไข่บดละเอียดลงในดิน หรือเติมสารปรับปรุงดินเพียงเล็กน้อยเช่น ปูนขาว ได้</li>
+                    <li><strong>เหมาะสม</strong> - ความเป็นกรด - ด่างอยู่ในเกณฑ์ที่เหมาะสม พืชสามารถดูดซึมสารอาหารได้อย่างเต็มประสิทธิภาพ ไม่จำเป็นต้องปรับสภาพดิน</li>
+                    <li><strong>เบสเล็กน้อย</strong> - ดินมีความด่างเล็กน้อย ไม่ส่งผลเสียรุนแรง หากต้องการรักษาสมดุลค่า pH สามารถชะล้างดินด้วยน้ำเปล่า เติมกากกาแฟหรือใบไม้แห้ง ได้</li>
+                    <li><strong>เบสมาก</strong> - ดินมีความด่างสูง แนะนำให้ปรับสภาพดิน เช่น เติมปุ๋ยอินทรีย์หรือน้ำหมักชีวภาพที่มีฤทธิ์เป็นกรดอ่อน ๆ เพื่อปรับค่า pH</li>
+                </ul>
+                <h4>NPK</h4>
+                <ul>
+                    <li><strong>ต่ำ</strong> - ดินขาดธาตุอาหารนี้ พืชอาจเติบโตช้า ควรเติมปุ๋ยที่เน้นธาตุนี้</li>
+                    <li><strong>เหมาะสม</strong> - ธาตุอาหารนี้ อยู่ในระดับที่เหมาะสมสำหรับพืช พืชสามารถดูดซึมไปใช้ได้ดี แนะนำให้บำรุงปุ๋ยเพิ่มเติมเพียงเล็กน้อยเป็นระยะ ๆ เพื่อรักษาความอุดมสมบูรณ์ของดิน</li>
+                    <li><strong>สูง</strong> - ธาตุอาหารนี้ มีความอุดมสมบูรณ์สูง ยังไม่จำเป็นต้องบำรุงเพิ่มเติมในขณะนี้</li>
+                    <li><strong>สูงเกินไป</strong> - ดินมีธาตุอาหารนี้ สูงเกินไป อาจส่งผลให้พืชเกิดอาการรากหรือใบไหม้ได้ ควรรดน้ำในปริมาณที่มากกว่าปกติเล็กน้อย เพื่อชะล้างธาตุอาหารส่วนเกิน</li>
+                </ul>
+            </details>
         </div>
 
         <div class="recommend-box">
@@ -265,6 +297,27 @@ const char index_html[] PROGMEM = R"rawliteral(
         suggestionBox.style.display = "none"
     }
 
+const PRESETPAKBAI = {
+    N: {
+        low: [0,60],
+        med: [60,100],
+        good: [101,200],
+        max: [200,1000]
+    },
+    P: {
+        low: [0,10],
+        med: [10,20],
+        good: [20,200],
+        max: [200,1000]
+    },
+    K: {
+        low: [0,60],
+        med: [60,100],
+        good: [101,200],
+        max: [200,1000]
+    }  
+}
+
 const db = {
     tomato: {
         names: { en: "tomato", th: "มะเขือเทศ" },
@@ -274,7 +327,9 @@ const db = {
             en: "Needs slightly acidic soil.",
             th: "ต้องการดินเป็นกรดเล็กน้อย"
         },
-        N: 23, P: 30, K: 45
+        N: PRESETPAKBAI.N,
+        P: PRESETPAKBAI.P,
+        K: PRESETPAKBAI.K, 
     },
     lavender: {
         names: { en: "lavender", th: "ลาเวนเดอร์" },
@@ -284,7 +339,9 @@ const db = {
             en: "Likes alkaline soil and sun.",
             th: "ชอบดินด่างและแสงแดด"
         },
-        N: 23, P: 30, K: 45
+        N: PRESETPAKBAI.N,
+        P: PRESETPAKBAI.P,
+        K: PRESETPAKBAI.K, 
     },
     rice: {
         names: { en: "rice", th: "ข้าว" },
@@ -294,7 +351,9 @@ const db = {
             en: "Needs acidic soil and plenty of water.",
             th: "ต้องการดินเป็นกรดและน้ำมาก"
         },
-        N: 23, P: 30, K: 45
+        N: PRESETPAKBAI.N,
+        P: PRESETPAKBAI.P,
+        K: PRESETPAKBAI.K, 
     },
 }
 
@@ -308,11 +367,50 @@ const db = {
         function getPlantStatus(plant) {
             const status = {
                 idealPH: currentSoil.PH >= plant.minPH && currentSoil.PH <= plant.maxPH,
-                idealN: currentSoil.N >= plant.N,
-                idealP: currentSoil.P >= plant.P,
-                idealK: currentSoil.K >= plant.K
+                idealN: currentSoil.N >= plant.N.med[0] && currentSoil.N <= plant.N.good[1] ,
+                idealP: currentSoil.P >= plant.P.med[0] && currentSoil.P <= plant.P.good[1] ,
+                idealK: currentSoil.K >= plant.K.med[0] && currentSoil.K <= plant.K.good[1] , 
             }
             status.isAllMatch = Object.values(status).every(v => v === true)
+            return status
+        }
+        
+        function getPlantStatusText(plant) {
+          function compareNPK(minerals, value) {
+              let result
+              if (value >= plant[minerals].med[0]) {
+                if (value >= plant[minerals].good[0]) {
+                  if (value >= plant[minerals].max[0]) {
+                    result = "max"
+                  } else {
+                    result = "good"
+                  }
+                } else {
+                  result = "medium"
+                }
+              } else {
+                result = "low"
+              }
+              return result
+            }
+            function comparePH() {
+              let value = currentSoil.PH
+              let result
+              if (value <= plant.minPH) {
+                result = "too acidic"
+              } else if (value <= plant.maxPH) {
+                result = "suitable"
+              } else {
+                result = "too base"
+              }
+              return result
+            }
+            const status = {
+              pH: comparePH(),
+              N: compareNPK("N", currentSoil.N),
+              P: compareNPK("P", currentSoil.P),
+              K: compareNPK("K", currentSoil.K),
+            }
             return status
         }
 
@@ -328,6 +426,25 @@ const db = {
                 ? "<span lang='en'>We did not find a suitable plant.</span><span lang='th'>ไม่เจอพืชที่เหมาะสมจะปลูกในดินนี้</span>"
                 : `<span lang='en'>The soil is suitable for planting</span><span lang='th'>ดินนี้เหมาะกับการปลูก</span>: ${result.join(", ")}`
         }
+        
+        function getStatusColor(status) {
+            switch(status) {
+                case "good": return { bg: "#e8f5e9", text: "#2e7d32", th: "สูง" }  // green
+                case "medium": return { bg: "#fff9c4", text: "#f57f17", th: "เหมาะสม" } // yellow
+                case "low":  return { bg: "#fce4ec", text: "#c62828", th: "ต่ำ" }  // red
+                case "max":  return { bg: "#ede7f6", text: "#4527a0", th: "สูงเกินไป" }  // purple
+                case "suitable": return { bg: "#e8f5e9", text: "#2e7d32", th: "เหมาะสม" }
+                case "too acidic": return { bg: "#fce4ec", text: "#c62828", th: "กรด" }
+                case "too base": return { bg: "#fce4ec", text: "#c62828", th: "เบส" }
+                default: return { bg: "#f5f5f5", text: "#333", th: "ไม่ทราบ" }
+            }
+        }
+        
+        function coloredTd(status) {
+            const c = getStatusColor(status)
+            return `<td style="background:${c.bg}; color:${c.text}; font-weight:bold"><span lang="en">${status}</span><span lang="th">${c.th}</span></td>`
+        }
+
 
         function check() {
             const input = document.querySelector("#plantIn").value
@@ -345,6 +462,7 @@ const db = {
             }
 
             const status = getPlantStatus(plant)
+            const statusText = getPlantStatusText(plant)
             const displayName = plant.names[currentLang]
 
             if (status.isAllMatch) {
@@ -353,16 +471,24 @@ const db = {
             } else {
                 res.innerHTML = `<strong>❌ Not Ideal.</strong>`
                 resbox.style.backgroundColor = "#fff3e0"
-
-                const feedback = [];
-                if (!status.idealPH) feedback.push(`Current pH is ${currentSoil.PH}. ${displayName} needs ${plant.minPH}-${plant.maxPH}.`)
-                if (!status.idealN)  feedback.push(`Current Nitrogen is ${currentSoil.N}. ${displayName} needs at least ${plant.N}.`)
-                if (!status.idealP)  feedback.push(`Current Phosphorus is ${currentSoil.P}. ${displayName} needs at least ${plant.P}.`)
-                if (!status.idealK)  feedback.push(`Current Potassium is ${currentSoil.K}. ${displayName} needs at least ${plant.K}.`)
-
-                improve.innerHTML = feedback.join("<br>")
-                improve.style.display = "block"
             }
+            improve.innerHTML = `<table><tbody><tr><td>&nbsp;</td><th>pH</th><th>N</th><th>P</th> <th>K</           th></tr><tr><th><span lang="en">Recommend</span><span lang="th">ค่าที่เหมาะสม</span></th>
+            <td>${plant.minPH} - ${plant.maxPH}</td>
+            <td>${plant.N.good[0]} - ${plant.N.good[1]}</td>
+            <td>${plant.P.good[0]} - ${plant.P.good[1]}</td>
+            <td>${plant.K.good[0]} - ${plant.K.good[1]}</td>
+            </tr><tr><th><span lang="en">Measured</span><span lang="th">ค่าที่วัดได้</span></th>
+            <td>${currentSoil.PH}</td>
+            <td>${currentSoil.N}</td>
+            <td>${currentSoil.P}</td>
+            <td>${currentSoil.K}</td>
+            </tr><tr><th><span lang="en">Status</span><span lang="th">ผลการประเมิน</span></th>
+            ${coloredTd(statusText.pH)}
+            ${coloredTd(statusText.N)}
+            ${coloredTd(statusText.P)}
+            ${coloredTd(statusText.K)}
+            </tr></tbody></table>` 
+            improve.style.display = "block"
         }
 
         document.querySelector("#plantIn").addEventListener("keypress", event => {
