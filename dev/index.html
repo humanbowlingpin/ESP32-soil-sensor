@@ -32,6 +32,7 @@
             <div id="resultCon" class="msg-box">
                 <div id="result"><span lang="en">Enter a plant name to check dirt compatibility.</span><span lang="th">กรอกชื่อพืชเพื่อตรวจสอบความเข้ากันของดิน</span></div>
                 <div id="improvement" class="improve-box"></div>
+<!--                <div id="description" class="description-box"></div> -->
             </div>
             <details style="text-align: left;margin-top: 1em;">
                 <summary><span lang="en">Recommendations</span><span lang="th">คำแนะนำ</span></summary>
@@ -162,12 +163,12 @@ const db = {
               if (value >= plant[minerals].med[0]) {
                 if (value >= plant[minerals].good[0]) {
                   if (value >= plant[minerals].max[0]) {
-                    result = "max"
+                    result = "too high"
                   } else {
-                    result = "good"
+                    result = "high"
                   }
                 } else {
-                  result = "medium"
+                  result = "suitable"
                 }
               } else {
                 result = "low"
@@ -178,11 +179,19 @@ const db = {
               let value = currentSoil.PH
               let result
               if (value <= plant.minPH) {
-                result = "too acidic"
+                if (plant.minPH - value <= 0.5) {
+                    result = "little acidic"
+                } else {
+                    result = "too acidic"
+                }
               } else if (value <= plant.maxPH) {
                 result = "suitable"
               } else {
-                result = "too base"
+                if (value - plant.maxPH <= 0.5) {
+                    result = "little base"
+                } else {
+                    result = "too base"
+                }
               }
               return result
             }
@@ -210,14 +219,15 @@ const db = {
         
         function getStatusColor(status) {
             switch(status) {
-                case "good": return { bg: "#e8f5e9", text: "#2e7d32", th: "สูง" }  // green
-                case "medium": return { bg: "#fff9c4", text: "#f57f17", th: "เหมาะสม" } // yellow
+                case "high": return { bg: "#fff9c4", text: "#f57f17", th: "สูง" } // yellow
                 case "low":  return { bg: "#fce4ec", text: "#c62828", th: "ต่ำ" }  // red
-                case "max":  return { bg: "#ede7f6", text: "#4527a0", th: "สูงเกินไป" }  // purple
-                case "suitable": return { bg: "#e8f5e9", text: "#2e7d32", th: "เหมาะสม" }
-                case "too acidic": return { bg: "#fce4ec", text: "#c62828", th: "กรด" }
-                case "too base": return { bg: "#fce4ec", text: "#c62828", th: "เบส" }
-                default: return { bg: "#f5f5f5", text: "#333", th: "ไม่ทราบ" }
+                case "too high":  return { bg: "#ede7f6", text: "#4527a0", th: "สูงเกินไป" }  // purple
+                case "suitable": return { bg: "#e8f5e9", text: "#2e7d32", th: "เหมาะสม" } // green
+                case "too acidic": return { bg: "#fce4ec", text: "#c62828", th: "กรด" } // red
+                case "too base": return { bg: "#fce4ec", text: "#c62828", th: "เบส" } // red
+                case "little acidic": return { bg: "#fff9c4", text: "#f57f17", th: "กรดเล็กน้อย" } // yellow
+                case "little base": return { bg: "#fff9c4", text: "#f57f17", th: "เบสเล็กน้อย" } // yellow
+                default: return { bg: "#f5f5f5", text: "#333", th: "ไม่ทราบ" } // grey
             }
         }
         
@@ -247,10 +257,10 @@ const db = {
             const displayName = plant.names[currentLang]
 
             if (status.isAllMatch) {
-                res.innerHTML = `<strong>✅ Match!</strong><br>${plant.info[currentLang]}`
+                res.innerHTML = `<strong>✅ <span lang="en">Match!</span><span lang="th">เหมาะสม</span></strong><br>`
                 resbox.style.backgroundColor = "#e8f5e9"
             } else {
-                res.innerHTML = `<strong>❌ Not Ideal.</strong>`
+                res.innerHTML = `<strong>❌ <span lang="en">Not Ideal!</span><span lang="th">ไม่เหมาะสม</span></strong>`
                 resbox.style.backgroundColor = "#fff3e0"
             }
             improve.innerHTML = `<table><tbody><tr><td>&nbsp;</td><th>pH</th><th>N</th><th>P</th> <th>K</           th></tr><tr><th><span lang="en">Recommend</span><span lang="th">ค่าที่เหมาะสม</span></th>
@@ -268,7 +278,7 @@ const db = {
             ${coloredTd(statusText.N)}
             ${coloredTd(statusText.P)}
             ${coloredTd(statusText.K)}
-            </tr></tbody></table>` 
+            </tr></tbody></table><p>${plant.info[currentLang]}</p>` 
             improve.style.display = "block"
         }
 
