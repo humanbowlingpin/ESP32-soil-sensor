@@ -14,15 +14,15 @@
         <h1 style="font-family: Kanit"><span lang="en">Soil Status</span><span lang="th">ตรวจวัดสถานะดิน</span></h1>
         <div class="language-picker"><button id="language-switcher">English</button></div>
         <div class="grid">
-            <div class="card"><span class="label"><span lang="en">Humidity</span><span lang="th">ความชื้น</span></span> : <span class="value">23 &percnt;</span></div>
-            <div class="card"><span class="label"><span lang="en">Temperature</span><span lang="th">อุณหภูมิ</span></span> : <span class="value">22 °C</span></div>
-            <div class="card"><span class="label">pH</span> : <span class="value">6.3</span></div>
-            <div class="card"><span class="label"><span lang="en">Nitrogen</span><span lang="th">ไนโตรเจน</span> (N)</span> : <span class="value">78 mg/kg</span></div>
-            <div class="card"><span class="label"><span lang="en">Phosphorus</span><span lang="th">ฟอสฟอรัส</span> (P)</span> : <span class="value">20 mg/kg</span></div>
-            <div class="card"><span class="label"><span lang="en">Potassium</span><span lang="th">โพแทสเซี่ยม</span> (K)</span> : <span class="value">80 mg/kg</span></div>
-            <div class="card"><span class="label">EC</span> : <span class="value">134 &micro;S/cm</span></div>
+            <div class="card"><span class="label"><span lang="en">Humidity</span><span lang="th">ความชื้น</span></span> : <span class="value">24 &percnt;</span></div>
+            <div class="card"><span class="label"><span lang="en">Temperature</span><span lang="th">อุณหภูมิ</span></span> : <span class="value">23 °C</span></div>
+            <div class="card"><span class="label">pH</span> : <span class="value">6.2</span></div>
+            <div class="card"><span class="label"><span lang="en">Nitrogen</span><span lang="th">ไนโตรเจน</span> (N)</span> : <span class="value">135 mg/kg</span></div>
+            <div class="card"><span class="label"><span lang="en">Phosphorus</span><span lang="th">ฟอสฟอรัส</span> (P)</span> : <span class="value">28 mg/kg</span></div>
+            <div class="card"><span class="label"><span lang="en">Potassium</span><span lang="th">โพแทสเซี่ยม</span> (K)</span> : <span class="value">91 mg/kg</span></div>
+            <div class="card"><span class="label">EC</span> : <span class="value">112 &micro;S/cm</span></div>
         </div>
-        <p><span lang="en">information at</span><span lang="th">ข้อมู​ล ณ​ เวลา</span> <span id="time"></span></p>
+        <p><span lang="en">information at</span><span lang="th">ข้อมู​ล ณ​ เวลา</span> 12/2/2026 - 12:25:53</p>
 
         <div class="search-box">
             <h3><span lang="en">Plant Compatibility</span><span lang="th">ตรวจสอบความเข้ากันของพืชและดิน</span></h3>
@@ -343,10 +343,10 @@ const db = {
 }
 
         const currentSoil = {
-            PH: parseFloat("%PH%") || 6.3,
-            N: parseFloat("%N%") || 78,
-            P: parseFloat("%P%") || 20,
-            K: parseFloat("%K%") || 80
+            PH: parseFloat("%PH%") || 6.2,
+            N: parseFloat("%N%") || 135,
+            P: parseFloat("%P%") || 28,
+            K: parseFloat("%K%") || 91
         }
 
         function getPlantStatus(plant) {
@@ -501,11 +501,7 @@ const db = {
                 )
             )
         }
-
-        const timeText = document.querySelector("#time")
-        let date = new Date()
-        timeText.innerHTML = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-
+        
         function getPlantSuggestions(query) {
             const q = query.trim().toLowerCase()
 
